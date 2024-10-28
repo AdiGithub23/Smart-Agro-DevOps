@@ -1,0 +1,73 @@
+services:
+  frontend:
+    # build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smartfront
+    ports:
+      - "3000:3000"
+    # This line was added
+    environment:
+      - REACT_APP_BACKEND_URL=http://smartback:5000
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+    networks:
+      - postgres-network
+
+  backend:
+    # build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartback
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/uploads/profile_pictures/:/app/uploads/profile_pictures/
+    depends_on:
+      - database
+    networks:
+      - postgres-network
+  
+  database:
+    build: ./database
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  analysis-script:
+    image: python:3.9-slim
+    container_name: analysis-script-1
+    volumes:
+      - ./analysis.py:/usr/src/app/analysis.py
+    networks:
+      - postgres-network
+    working_dir: /usr/src/app
+    command: python analysis.py
+    restart: always
+
+  smartagro-script:
+    image: python:3.9-slim
+    container_name: smartagro-script-1
+    volumes:
+      - ./smartagro.py:/usr/src/app/smartagro.py
+    networks:
+      - postgres-network
+    working_dir: /usr/src/app
+    command: python smartagro.py
+    restart: always
+
+
+networks:
+  postgres-network:
+    driver: bridge
