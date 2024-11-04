@@ -15,12 +15,14 @@
     "axios": "^1.7.4",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
+    "chai": "^5.1.2",
     "chart.js": "^4.4.3",
     "chartjs-plugin-annotation": "^3.0.1",
     "formik": "^2.4.6",
     "https-browserify": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
+    "mocha": "^10.8.2",
     "process": "^0.11.10",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
@@ -30,19 +32,19 @@
     "react-router-dom": "^6.25.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.12.7",
+    "selenium-webdriver": "^4.26.0",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.4",
     "util": "^0.12.5",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5",
-    "yup": "^1.4.0",
-    "http-proxy-middleware": "^2.0.6"
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "mocha 'tests/**/*.js'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
