@@ -26,12 +26,12 @@ export default function AdminSLTDashboard() {
   const [inactiveDevices, setInactiveDevices] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
   const [userId, setUserId] = useState(null);
   const isNestHubMax = useMediaQuery(
-    "(max-width: 1300px) and (min-width: 1200px)"
+    "(max-width: 1370px) and (min-width: 1200px)"
   );
-  const isNestHub = useMediaQuery("(max-width: 1024px) and (min-width: 980px)");
+  const isNestHub = useMediaQuery("(max-width: 1200px) and (min-width: 980px)");
   const isSurfacePro7 = useMediaQuery(
     "(max-width: 1370px) and (min-width: 912px)"
   );
@@ -208,11 +208,12 @@ export default function AdminSLTDashboard() {
           display: "flex",
           alignItems: "center",
           mt: isMobile ? 15 : isTablet ? 12 :isSurfacePro7?15: 12,
-          marginLeft: isMobile ? "15px" : isTablet ? "240px" : isNestHubMax
+          marginLeft: isMobile ? "15px" : isTablet ? "250px" : isNestHub
           ?"250px":isSurfacePro7?"190px": isNestHubMax
           ?"300px": "250px",
           justifyContent: isMobile ? "center" : "left",
           padding: "10px",
+          paddingLeft:{ xs: 0, sm: 0, md: 0, lg: 6 },
         }}
       >
         {/* ----------------------Device Card-------------------- */}
@@ -223,13 +224,14 @@ export default function AdminSLTDashboard() {
                 <Paper
                  sx={{
                   height: 150,
-                  width: 120,
+                  width: { xs: 120, sm: 120, md: 100, lg: 110 },
                   border: "none",
                   background:
                     "linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2))",
                   boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)",
                   borderRadius: "10%",
                   padding: "15px",
+                  marginLeft:0,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -331,7 +333,7 @@ export default function AdminSLTDashboard() {
       {/* ---------------------- NotificationBox----------------------- */}
       <NotificationSLT />
 
-      <Footer1 /> 
+      
       <DateTime />
     </div>
   );

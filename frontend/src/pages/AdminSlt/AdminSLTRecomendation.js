@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Paper, Typography, Button, Grid, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Footer1 from "../../Components/Footer1";
@@ -14,18 +14,37 @@ import {
 } from "@mui/material";
 import NavBar6 from "../../Components/NavBar6";
 import Footer2 from "../../Components/Footer2";
+import axios from 'axios';
+
 
 export default function AdminSLTRecomandation() {
   const [showSecondImage, setShowSecondImage] = useState(false);
+  const [imageUrls, setImageUrls] = useState([]);
   const { state } = useLocation();
-  const { district, area, gramaNiladhariArea } = state || {
+  const { district, area, gramaNiladhariArea, gramaNiladhariid } = state || {
     district: " ",
     area: " ",
     gramaNiladhariArea: " ",
   };
 
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await axios.get(`/api/recommendation/gs_images/${gramaNiladhariid}`);
+        if (response.data) {
+          setImageUrls(response.data.map(item => item.url));
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+
+    fetchImages();
+  }, [gramaNiladhariid]);
+
+
   const handleButtonClick = () => {
-    setShowSecondImage(true);
+    setShowSecondImage(true); 
   };
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -143,11 +162,13 @@ export default function AdminSLTRecomandation() {
             </Grid>
           </Grid>
 
-          <img
-            src="/Images/Table1.png"
+          {imageUrls[0] && (
+            <img
+            src={`${imageUrls[0]}.png`}
             alt="Sample"
             style={{ width: "100%", height: "auto", marginTop: "20px" }}
           />
+          )}
         </Paper>
 
         <Button
@@ -168,6 +189,7 @@ export default function AdminSLTRecomandation() {
 
         {showSecondImage && (
           <>
+          {imageUrls[1] && (
             <Paper
               elevation={3}
               sx={{
@@ -183,11 +205,12 @@ export default function AdminSLTRecomandation() {
               }}
             >
               <img
-                src="/Images/Table2.png"
+                src={`${imageUrls[1]}.png`}
                 alt="Sample"
                 style={{ width: "100%", height: "auto" }}
               />
             </Paper>
+          )}
 
             <Paper
               elevation={3}
@@ -578,6 +601,7 @@ export default function AdminSLTRecomandation() {
               </TableContainer>
             </Paper>
 
+            {imageUrls[2] && (
             <Paper
               elevation={3}
               sx={{
@@ -591,16 +615,17 @@ export default function AdminSLTRecomandation() {
               }}
             >
               <img
-                src="/Images/Details.png"
+                src={`${imageUrls[2]}.png`}
                 alt="Sample"
                 style={{ width: "100%", height: "auto" }}
               />
             </Paper>
+            )}
           </>
         )}
       </Box>
       <DateTime />
-      <Footer2 />
+     
     </div>
   );
 }

@@ -102,8 +102,7 @@ async function tileYieldData(req, res) {
       },
       // limit: 5,
       order: [
-        ["date", "DESC"],
-        ["time", "DESC"]  
+        ["id", "ASC"]
       ],
       attributes: [
         "id",

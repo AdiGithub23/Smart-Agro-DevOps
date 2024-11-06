@@ -87,7 +87,6 @@ export default function AdminCustomerDevice() {
   const [selectedFarm, setSelectedFarm] = useState([]);
   const [managerDetails, setManagerDetails] = useState([]);
   const [selectedManager, setSelectedManager] = useState([]);
-  
   // const [farmName, setFarmName] = useState('');
   // const [farmId, setFarmId] = useState('');
   const [managerName, setManagerName] = useState("");
@@ -346,7 +345,7 @@ export default function AdminCustomerDevice() {
       >
       
         <Typography
-          variant="h6"
+          fontSize="50px"
           align="center"
           gutterBottom
           marginTop={12}
@@ -367,8 +366,8 @@ export default function AdminCustomerDevice() {
             <Box
               sx={{
                 width: { xs: 150, sm: 200, md: 250, lg: 250 },
-                top: { xs: 15, sm: 2, md: 10, lg: 58 },
-                right: { xs: 175, sm: 352, md: 462, lg: 250 },
+                top: { xs: 5, sm: 2, md: 10, lg: 58 },
+                right: { xs: 10, sm: 15, md: 12, lg: 250 },
                 zIndex: 1000,
                 position: "absolute", // Ensure the button's position is absolute
               }}
@@ -772,35 +771,28 @@ export default function AdminCustomerDevice() {
         
         {/*---------------------Assign Device-------------------------------*/}
         <Dialog
-  open={open}
-  onClose={handleClose}
-  maxWidth="md"
-  fullWidth
-  sx={{
-    "& .MuiDialog-paper": {
-      borderRadius: "20px",
-      backgroundColor: "rgba(199, 221, 211)",
-    },
-  }}
->
-  <Formik
-    initialValues={{
-      manager_name: "",
-      managerId: '',
-      latitude: '',
-      longitude: '',
-      device_label: '',
-    }}
-    validationSchema={Yup.object({
-      manager_name: Yup.string().required('Manager Name is required'),
-      managerId: Yup.string().required('Manager ID is required'),
-      latitude: Yup.string().required('Latitude is required'),
-      longitude: Yup.string().required('Longitude is required'),
-      device_label: Yup.string().required('Device label is required'),
-    })}
-    onSubmit={handleSubmit}
-  >
-        {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
+          open={open}
+          onClose={handleClose}
+          maxWidth="md"
+          fullWidth
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: "20px",
+              backgroundColor: "rgba(199, 221, 211)",
+            },
+          }}
+        >  
+        <Formik
+        initialValues={{
+          managerName: '',
+          managerId: '',
+          latitude: '',
+          longitude: '',
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting, setFieldValue }) => (
           <Form>
           <DialogTitle>Assign To Manager</DialogTitle>
           <br />
@@ -841,19 +833,15 @@ export default function AdminCustomerDevice() {
                   </MenuItem>
                 ))} */}
                   </TextField>
-                  <Field
-                  as={TextField}
-                  label="Device Label"
-                  name="device_label"
+                  <TextField
+                    // select
+                    label="Device Label"
                     // value={device_label || selectedDevice.device_label || null}
                     // onChange={(e) => setDeviceLabel(e.target.value)} 
                     value={selectedDevice.device_label}
                     onChange={(e) =>
                       setSelectedDevice({ ...selectedDevice, device_label: e.target.value })
                     }
-                    onBlur={handleBlur}
-                  error={touched.device_label && Boolean(errors.device_label)}
-                  helperText={touched.device_label && errors.device_label}
                     // value={selectedDevice.device_label || device_label}
                     // // value={selectedDevice?.model_name || ''}
                     // onChange={(e) => device_label===(e.target.value)}
@@ -878,13 +866,13 @@ export default function AdminCustomerDevice() {
                         transition: "background-color 5000s ease-in-out 0s",
                       },
                     }}
-                  />
+                  >
                     {/* {devices.map((device) => (
                   <MenuItem key={device.id} value={device.model_name}>
                     {device.model_name}
                   </MenuItem>
                 ))} */}
-                  
+                  </TextField>
                   <TextField
                     // select
                     label="Model Name"
@@ -932,9 +920,6 @@ export default function AdminCustomerDevice() {
                     onChange={(e) =>
                       setSelectedDevice({ ...selectedDevice, latitude: e.target.value })
                     }
-                    onBlur={handleBlur}
-                error={touched.latitude && Boolean(errors.latitude)}
-                helperText={touched.latitude && errors.latitude}
                     fullWidth
                     sx={{
                       "& .MuiInputBase-root": {
@@ -955,23 +940,16 @@ export default function AdminCustomerDevice() {
                         transition: "background-color 5000s ease-in-out 0s",
                       },
                     }}
+                    helperText={<ErrorMessage name="latitude" component="div" style={{ color: 'red' }} />}
                     />
-                 <Field
-                    as={TextField}
-                  
-                   margin="dense"
-                    label="Longitude" 
-                    name="longitude"
+                  <TextField
+                    label="Longitude"
                     // value={longitude || selectedDevice.longitude || null}
                     // onChange={(e) => setLongitude(e.target.value)}
                     value={selectedDevice.longitude}
                     onChange={(e) =>
                       setSelectedDevice({ ...selectedDevice, longitude: e.target.value })
                     }
-                    onBlur={handleBlur}
-                error={touched.longitude && Boolean(errors.longitude)}
-                helperText={touched.longitude && errors.longitude}
-                    
                     fullWidth
                     sx={{
                       "& .MuiInputBase-root": {
@@ -1002,7 +980,6 @@ export default function AdminCustomerDevice() {
                     // value={selectedDevice?.id || ''}
                     onChange={(e) => setSelectedFarm(e.target.value)}
                     // onChange={(e) => setFarmName(e.target.value)}
-                    
                     fullWidth
                     sx={{
                       "& .MuiInputBase-root": {
@@ -1024,7 +1001,6 @@ export default function AdminCustomerDevice() {
                       },
                     }}
                   >
-                    
                     {farmDetails.map((farm) => (
                       <MenuItem key={farm.id} value={farm.id}>
                         {farm.farm_name}
@@ -1070,17 +1046,14 @@ export default function AdminCustomerDevice() {
                     as={TextField}
                     select
                     label="Manager Name"
-                    name="manager_name" 
                     value={selectedManager}
-                   
                     fullWidth
-                    
+                    error={Boolean(ErrorMessage)}
+                    helperText={<ErrorMessage name="managerName" component="div" style={{ color: 'red' }} />}
                     onChange={(e) => setSelectedManager(e.target.value)}
                     // value={managerName}
                     // onChange={(e) => setManagerName(e.target.value)}
-                    onBlur={handleBlur}
-        error={touched.manager_name && Boolean(errors.manager_name)}
-        helperText={touched.manager_name && errors.manager_name}
+                  
                     sx={{
                       "& .MuiInputBase-root": {
                         "&:after": {
@@ -1101,7 +1074,6 @@ export default function AdminCustomerDevice() {
                       },
                     }}
                   >
-                    
                     {managerDetails.map((manager) => (
                       <MenuItem key={manager.id} value={manager.id}>
                         {manager.full_name}
@@ -1112,12 +1084,10 @@ export default function AdminCustomerDevice() {
                     as={TextField}
                     select
                     label="Manager ID"
-                    name="managerId"
                     value={selectedManager}
                     fullWidth
-                    onBlur={handleBlur}
-              error={touched.managerId && Boolean(errors.managerId)}
-              helperText={touched.managerId && errors.managerId}
+                    error={Boolean(ErrorMessage)}
+                    helperText={<ErrorMessage name="managerId" component="div" style={{ color: 'red' }} />}
                     onChange={(e) => setSelectedManager(e.target.value)}
                     // value={managerId}
                     // onChange={(e) => setManagerId(e.target.value)}
@@ -1226,7 +1196,7 @@ export default function AdminCustomerDevice() {
           </DialogActions>
         </Dialog> */}
       </Container>
-      <Footer2 />
+      
       <DateTime />
       
     </div>

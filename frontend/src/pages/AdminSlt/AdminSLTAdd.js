@@ -9,6 +9,7 @@ import {
   Box,
   Typography,
   TextField,
+  Select, MenuItem,
   Button,
   InputAdornment,
   Paper,
@@ -48,6 +49,10 @@ const schema = Yup.object().shape({
   fullName: Yup.string().required("Full Name is required"),
   companyName: Yup.string().required("Company name is required"),
   address: Yup.string().required("Address is required"),
+  accManOne: yup.string().required("Primary Account Manager is required"),
+  accManTwo: yup.string()
+  .required("Secondary Account Manager is required")
+  .notOneOf([yup.ref('accManOne')], "Primary and Secondary Account Managers must be different"),
 });
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
@@ -87,6 +92,7 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function AdminSLTAdd() {
+  const [currentSltAdmins, setCurrentSltAdmins] = useState([]);
   const MAX_FILE_SIZE = 5 * 1024 * 1024; 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -120,8 +126,32 @@ export default function AdminSLTAdd() {
         console.error("Error fetching next user ID:", error);
       }
     };
+    const fetchOtherSltAdmins = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const myResponse = await axios.get(`/api/user/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Logged-In User data fetched: ", myResponse.data);
+        console.log("Logged-In User Id          : ", myResponse.data.id);
+
+        const response = await fetch("/api/user");
+        const sltdata = await response.json();
+        const sltAdmins = sltdata.filter(
+          // user => user.user_role === "slt-admin"
+          (user) => user.user_role === "slt-admin" && user.visibility === true && user.id != myResponse.data.id
+        );
+        console.log("sltAdmins: ", sltAdmins)
+        setCurrentSltAdmins(sltAdmins);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
     fetchNextUserId();
+    fetchOtherSltAdmins();
   }, []);
 
   const handleEditClick = () => {
@@ -178,6 +208,8 @@ export default function AdminSLTAdd() {
         user_role: "customer-admin",
         company: values.companyName,
         profile_picture: selectedFile,
+        accManOne: values.accManOne,
+        accManTwo: values.accManTwo,
       };
       console.log(values);
       console.log(formData);
@@ -272,6 +304,8 @@ export default function AdminSLTAdd() {
                   companyName: "",
                   adminId: nextUserId,
                   address: "",
+                  accManOne: "",
+                  accManTwo: "",
                 }}
               >
                 {({
@@ -653,6 +687,49 @@ export default function AdminSLTAdd() {
                             }}
                           />
                         </Grid>
+
+                        {/* Account Manager 1 & 2*/}
+                        <Grid item>
+                        <Typography gutterBottom>Primary Account Manager*</Typography>
+                            <Select
+                              id="accManOne"
+                              name="accManOne"
+                              value={values.accManOne}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={touched.accManOne && !!errors.accManOne}
+                              // error={touched.accManOne && Boolean(errors.accManOne)}
+                            >
+                              {currentSltAdmins.map((admin) => (
+                                <MenuItem key={admin.id} value={admin.id}>
+                                  {admin.full_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                        </Grid>
+                        <Grid item>
+                        <Typography gutterBottom>Secondary Account Manager*</Typography>
+                            <Select
+                              id="accManTwo"
+                              name="accManTwo"
+                              value={values.accManTwo}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={touched.accManOne && !!errors.accManOne}
+                              // error={touched.accManTwo && Boolean(errors.accManTwo)}
+                            >
+                              {currentSltAdmins.map((admin) => (
+                                <MenuItem key={admin.id} value={admin.id}>
+                                  {admin.full_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                        </Grid>
+                        {values.accManOne === values.accManTwo && (
+                          <Typography color="error" variant="body2">
+                            Primary & Secondary account managers must be different
+                          </Typography>
+                        )}
 
                         <Grid
                           item

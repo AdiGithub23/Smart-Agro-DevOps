@@ -691,7 +691,7 @@ export default function ManagerYield() {
       </Dialog>
 
       <DateTime />
-      <Footer2 />
+     
     </div>
   );
 }

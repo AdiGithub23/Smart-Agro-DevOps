@@ -322,7 +322,7 @@ export default function AdminCustomerDashboard() {
       {/*---------------------Notification-----------------------*/}
       <NotificationCA />
 
-      <Footer1 />
+      
     </div>
   );
 }

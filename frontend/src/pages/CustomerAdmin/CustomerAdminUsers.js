@@ -588,7 +588,7 @@ export default function CustomerAdminUser() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+     
       <DateTime />
     </div>
   );

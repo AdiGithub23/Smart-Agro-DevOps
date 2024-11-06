@@ -58,7 +58,7 @@ const ManagerRealTime = () => {
                 </Box>  
       </Container>
       <DateTime />
-      <Footer2 />
+      
     </div>
   );
 };

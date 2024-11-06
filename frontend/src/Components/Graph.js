@@ -141,7 +141,7 @@ export default function AreaChartFillByXRange() {
   sx={{
     mx: 2,
     width: { xs: 140, sm: 130, md: 150, lg: 160 },
-    marginLeft: { xs: 2, sm: 2, md: 2, lg: 10 },
+    marginLeft: { xs: 2, sm: 1, md: 2, lg: 10 },
     "& .MuiInputBase-root": {
       "&:after": {
         borderBottomColor: "green",
@@ -200,7 +200,7 @@ export default function AreaChartFillByXRange() {
   sx={{
     mx: 2,
     width: { xs: 140, sm: 130, md: 150, lg: 160 },
-    marginLeft: { xs: 3, sm: 5, md: 5, lg: 15 },
+    marginLeft: { xs: 3, sm: 3, md: 5, lg: 15 },
     "& .MuiInputBase-root": {
       "&:after": {
         borderBottomColor: "green",

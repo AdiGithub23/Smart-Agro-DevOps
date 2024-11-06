@@ -9,6 +9,7 @@ import {
   ListItemText,
   Toolbar,
   IconButton,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -90,13 +91,15 @@ export default function SideBar2({ open, handleDrawerToggle }) {
           },
         }}
       >
-        <Box sx={{ overflow: "auto" }}>
+        <Box sx={{ overflow: "auto",height: "100%",
+          paddingBottom:  isMobile ? 1 : isTablet ? 3 : 3, }}>
           <Toolbar
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               flexDirection: "column",
+              
             }}
           >
             <Link to="/">
@@ -104,9 +107,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 src="/Images/logo.png"
                 alt="Logo"
                 style={{
-                  height: isMobile ? 40 : isTablet ? 60 : 55,
-                  marginBottom: 6,
-                  marginTop: isMobile ? 20 : 25,
+                  height: isMobile ? 40 : isTablet ? 50 : 55,
+                  marginBottom: isMobile ? 4 : isTablet ? 0 : 4,
+                  marginTop: isMobile ? 20 : 15,
                 }}
               />
             </Link>
@@ -127,9 +130,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                     : "transparent",
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "20px" : "2px",
+                marginTop: isMobile ? "0px" : "2px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 : 45,
                 },
               }}
             >
@@ -137,7 +140,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 <DashboardIcon
                   sx={{
                     color: "black",
-                    fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                    fontSize:  24,
                   }}
                 />
               </ListItemIcon>
@@ -161,9 +164,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                       : "transparent",
                   borderRadius: "20px",
                   justifyContent: isMobile ? "center" : "flex-start",
-                  marginTop: isMobile ? "20px" : "4px",
+                  marginTop: isMobile ? "16px" : "2px",
                   "& .MuiListItemIcon-root": {
-                    minWidth: isMobile ? 0 : 56,
+                    minWidth: isMobile ? 0 : 45,
                   },
                 }}
               >
@@ -171,7 +174,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                   <HistoryIcon
                     sx={{
                       color: "black",
-                      fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                      fontSize:  24,
                     }}
                   />
                 </ListItemIcon>
@@ -196,9 +199,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                       : "transparent",
                   borderRadius: "20px",
                   justifyContent: isMobile ? "center" : "flex-start",
-                  marginTop: isMobile ? "20px" : "4px",
+                  marginTop: isMobile ? "16px" : "2px",
                   "& .MuiListItemIcon-root": {
-                    minWidth: isMobile ? 0 : 56,
+                    minWidth: isMobile ? 0 : 45,
                   },
                 }}
               >
@@ -206,7 +209,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                   <NotificationsIcon
                     sx={{
                       color: "black",
-                      fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                      fontSize:   24,
                     }}
                   />
                 </ListItemIcon>
@@ -231,9 +234,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                       : "transparent",
                   borderRadius: "20px",
                   justifyContent: isMobile ? "center" : "flex-start",
-                  marginTop: isMobile ? "20px" : "4px",
+                  marginTop: isMobile ? "16px" : "2px",
                   "& .MuiListItemIcon-root": {
-                    minWidth: isMobile ? 0 : 56,
+                    minWidth: isMobile ? 0 : 45,
                   },
                 }}
               >
@@ -241,7 +244,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                   <AssignmentTurnedInIcon
                     sx={{
                       color: "black",
-                      fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                      fontSize:  24,
                     }}
                   />
                 </ListItemIcon>
@@ -265,9 +268,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                       : "transparent",
                   borderRadius: "20px",
                   justifyContent: isMobile ? "center" : "flex-start",
-                  marginTop: isMobile ? "20px" : "4px",
+                  marginTop: isMobile ? "16px" : "2px",
                   "& .MuiListItemIcon-root": {
-                    minWidth: isMobile ? 0 : 56,
+                    minWidth: isMobile ? 0 : 45,
                   },
                 }}
               >
@@ -275,7 +278,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                   <SpaIcon
                     sx={{
                       color: "black",
-                      fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                      fontSize:  24,
                     }}
                   />
                 </ListItemIcon>
@@ -298,9 +301,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                     : "transparent",
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "20px" : "4px",
+                marginTop: isMobile ? "16px" : "2px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 :45,
                 },
               }}
             >
@@ -308,7 +311,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 <GroupsIcon
                   sx={{
                     color: "black",
-                    fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                    fontSize: 24,
                   }}
                 />
               </ListItemIcon>
@@ -330,9 +333,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                     : "transparent",
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "20px" : "4px",
+                marginTop: isMobile ? "16px" : "2px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 : 45,
                 },
               }}
             >
@@ -340,7 +343,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 <AgricultureIcon
                   sx={{
                     color: "black",
-                    fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                    fontSize: 24,
                   }}
                 />
               </ListItemIcon>
@@ -363,9 +366,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                     : "transparent",
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "20px" : "4px",
+                marginTop: isMobile ? "16px" : "2px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 : 45,
                 },
               }}
             >
@@ -376,7 +379,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 <ListItemText
                   primary="Devices"
                   sx={{
-                    fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                    fontSize:  24,
                     color: "black",
                   }}
                 />
@@ -397,9 +400,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                     : "transparent",
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "20px" : "4px",
+                marginTop: isMobile ? "16px" : "2px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 : 45,
                 },
               }}
             >
@@ -407,7 +410,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 <MessageIcon
                   sx={{
                     color: "black",
-                    fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                    fontSize:24,
                   }}
                 />
               </ListItemIcon>
@@ -430,9 +433,9 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                     : "transparent",
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "20px" : "4px",
+                marginTop: isMobile ? "16px" : "1px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 : 45,
                 },
               }}
             >
@@ -440,7 +443,7 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 <TravelExploreIcon
                   sx={{
                     color: "black",
-                    fontSize: isMobile ? 24 : isTablet ? 28 : 24,
+                    fontSize:  24,
                   }}
                 />
               </ListItemIcon>
@@ -458,16 +461,16 @@ export default function SideBar2({ open, handleDrawerToggle }) {
                 },
                 borderRadius: "20px",
                 justifyContent: isMobile ? "center" : "flex-start",
-                marginTop: isMobile ? "40px" : "1px",
+                marginTop: isMobile ? "16px" : "1px",
                 "& .MuiListItemIcon-root": {
-                  minWidth: isMobile ? 0 : 56,
+                  minWidth: isMobile ? 0 : 45,
                 },
                
               }}
             >
               <ListItemIcon sx={{ color: "black" }}>
                 <LogoutIcon
-                  sx={{ fontSize: isMobile ? 24 : isTablet ? 28 : 24 }}
+                  sx={{ fontSize: 24 }}
                 />
               </ListItemIcon>
               {!isMobile && (
@@ -475,6 +478,54 @@ export default function SideBar2({ open, handleDrawerToggle }) {
               )}
             </ListItem>
           </List>
+         <Box sx={{
+    position: "fixed",
+    bottom: 0,
+    px:isMobile ? 1.5 :isTablet ?4 : 2,
+    py: isMobile ? 3 :isTablet ?1.5 : 3,
+    textAlign: "center",
+  }}>
+<center>
+<Typography 
+  sx={{
+    fontSize: isMobile ? "0.5rem" :isTablet ?"0.5rem": "0.8rem",
+    color: "#000000",
+    marginTop: 2,
+  }}
+>
+  {isMobile ? (
+    <>
+      © 2024 Fazenda 
+      <br/>
+      <Link
+        href="https://www.sltdigitallab.lk/"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+      >
+        SLT Digital Lab
+      </Link>
+    </>
+  ) : (
+    <>
+      Copyright © 2024 Fazenda.
+      <br />
+      Designed by{" "}
+      <Link
+        href="https://www.sltdigitallab.lk/"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+      >
+        SLT Digital Lab
+      </Link>
+    </>
+  )}
+</Typography>
+                </center>
+                </Box>
+
+      
         </Box>
       </Drawer>
     </>

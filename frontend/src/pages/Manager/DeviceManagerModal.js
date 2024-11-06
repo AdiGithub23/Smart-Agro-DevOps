@@ -53,21 +53,25 @@ const DeviceModal = ({ open, handleClose, onAddData, initialValues }) => {
         onAddData(values);
       }
       handleClose();
+      formik.resetForm();
     },
     enableReinitialize: true, // Allows form to update when initialValues change
   });
 
   const deviceId = localStorage.getItem("DeviceID");
-
+  const handleCancel = () => {
+    formik.resetForm();
+    handleClose();
+  };
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleCancel}>
       <Box
         sx={{
           position: "absolute",
           top: { xs: "50%", sm: "40%", md: "50%", lg: "50%" },
           left: { xs: "50%", sm: "60%", md: "50%", lg: "55%" },
           transform: "translate(-50%, -50%)",
-          width: { xs: 260, sm: 500, md: 400, lg: 400 },
+          width: { xs: 260, sm: 380, md: 400, lg: 400 },
           bgcolor: "rgba(199, 221, 211)",
           border: "2px solid #000",
           boxShadow: 24,
@@ -145,7 +149,7 @@ const DeviceModal = ({ open, handleClose, onAddData, initialValues }) => {
               {initialValues ? "Save" : "Add"}
             </Button>
             <Button
-              onClick={handleClose}
+              onClick={handleCancel}
               variant="contained"
               color="success"
               sx={{ mt: 2, ml: 2 }}

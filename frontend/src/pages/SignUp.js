@@ -10,13 +10,6 @@ import {
   Avatar,
   CssBaseline,
 } from "@mui/material";
-import { useState } from 'react';
-import {
-  
-  IconButton,
-  InputAdornment,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Formik } from "formik";
 import * as yup from "yup";
 import DateTime from "../Components/DateTime";
@@ -24,12 +17,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
-
   const schema = yup.object().shape({
     full_name: yup.string().required("Full Name is required"),
     company: yup.string().required("Company Name is required"),
@@ -320,93 +307,83 @@ export default function SignUp() {
                       />
                     </Grid>
                     <Grid item xs={12}>
-        <TextField
-          fullWidth
-          id="password"
-          label="Password*"
-          name="password"
-          type={showPassword ? 'text' : 'password'}
-          variant="standard"
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.password && !!errors.password}
-          helperText={touched.password && errors.password}
-          InputLabelProps={{
-            style: { color: 'black' },
-          }}
-          sx={{
-            "& .MuiInputBase-root": {
-              "&:after": {
-                borderBottomColor: 'green',
-              },
-            },
-            "& input:-webkit-autofill": {
-              WebkitBoxShadow:
-                "0 0 0 1000px rgba(154, 193, 175, 0.7) inset",
-              WebkitTextFillColor: 'black',
-              transition: "background-color 5000s ease-in-out 0s",
-            },
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowPassword}
-                  edge="end"
-                  aria-label="toggle password visibility"
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          id="confirm_password"
-          label="Confirm Password*"
-          name="confirm_password"
-          type={showConfirmPassword ? 'text' : 'password'}
-          variant="standard"
-          value={values.confirm_password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.confirm_password && !!errors.confirm_password}
-          helperText={touched.confirm_password && errors.confirm_password}
-          InputLabelProps={{
-            style: { color: 'black' },
-          }}
-          sx={{
-            "& .MuiInputBase-root": {
-              "&:after": {
-                borderBottomColor: 'green',
-              },
-            },
-            "& input:-webkit-autofill": {
-              WebkitBoxShadow:
-                "0 0 0 1000px rgba(154, 193, 175, 0.7) inset",
-              WebkitTextFillColor: 'black',
-              transition: "background-color 5000s ease-in-out 0s",
-            },
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowConfirmPassword}
-                  edge="end"
-                  aria-label="toggle confirm password visibility"
-                >
-                  {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
+                      <TextField
+                        fullWidth
+                        id="password"
+                        label="Password*"
+                        name="password"
+                        type="password"
+                        variant="standard"
+                        value={values.password}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={touched.password && !!errors.password}
+                        helperText={touched.password && errors.password}
+                        InputLabelProps={{
+                          style: { color: "black" },
+                        }}
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            "&:after": {
+                              borderBottomColor: "green",
+                            },
+                          },
+                          "& input:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(154, 193, 175, 0.7) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                          "&:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(154, 193, 175, 0.7) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        id="confirm_password"
+                        label="Confirm Password*"
+                        name="confirm_password"
+                        type="password"
+                        variant="standard"
+                        value={values.confirm_password}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={
+                          touched.confirm_password && !!errors.confirm_password
+                        }
+                        helperText={
+                          touched.confirm_password && errors.confirm_password
+                        }
+                        InputLabelProps={{
+                          style: { color: "black" },
+                        }}
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            "&:after": {
+                              borderBottomColor: "green",
+                            },
+                          },
+                          "& input:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(154, 193, 175, 0.7) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                          "&:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(154, 193, 175, 0.7) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                        }}
+                      />
+                    </Grid>
                     <Grid item xs={12}>
                       <Button
                         type="submit"

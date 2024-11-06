@@ -1,4 +1,4 @@
-const { User, DeviceManager } = require("../models");
+const { User, DeviceManager, Device } = require("../models");
 const bcrypt = require("bcrypt");
 const { sequelize } = require("../models");
 const path = require("path");
@@ -128,6 +128,12 @@ exports.updateUser = async (req, res) => {
         await User.update(
           { company: updatedUser.company }, 
           { where: { createdById: updatedUser.id, user_role: 'customer-manager' } }
+        );
+
+        // Update device table with customerName and company
+        await Device.update(
+          { customer_name: updatedUser.full_name, company_name: updatedUser.company }, 
+          { where: { customer_id: id } }
         );
       }
 

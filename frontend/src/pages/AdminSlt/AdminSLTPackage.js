@@ -1212,7 +1212,7 @@ export default function AdminSLTPackage() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+      
       <DateTime />
     </div>
   );

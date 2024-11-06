@@ -53,6 +53,8 @@ import {ProtectedRoute, ValidationProtectedRoute} from "./Components/ProtectedRo
 import NavBar6 from "./Components/NavBar6.js";
 import NavBar7 from "./Components/NavBar7.js";
 
+// package.json: "test": "react-scripts test",
+
 const CustomerAdminLayout = ({ children }) => (
   <>
     <NavBar7 />

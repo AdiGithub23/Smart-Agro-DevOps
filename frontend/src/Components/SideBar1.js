@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Typography,
   Toolbar,
   IconButton,
   useMediaQuery,
@@ -334,7 +335,52 @@ export default function SideBar1({ open, handleDrawerToggle }) {
             </ListItem>
 
           </List>
-
+          <Box sx={{
+    position: "fixed",
+    bottom: 0,
+    px:isMobile ? 1.5 :isTablet ?3 : 2,
+    py:  3,
+    textAlign: "center",
+  }}>
+<center>
+<Typography
+  sx={{
+    fontSize: isMobile ? "0.5rem" :isTablet ?"0.5rem": "0.8rem",
+    color: "#000000",
+    marginTop: 2,
+  }}
+>
+  {isMobile ? (
+    <>
+      © 2024 Fazenda 
+      <br/>
+      <Link
+        href="https://www.sltdigitallab.lk/"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+      >
+        SLT Digital Lab
+      </Link>
+    </>
+  ) : (
+    <>
+      Copyright © 2024 Fazenda.
+      <br />
+      Designed by{" "}
+      <Link
+        href="https://www.sltdigitallab.lk/"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+      >
+        SLT Digital Lab
+      </Link>
+    </>
+  )}
+</Typography>
+                </center>
+                </Box>
         </Box>
       </Drawer>
     </>

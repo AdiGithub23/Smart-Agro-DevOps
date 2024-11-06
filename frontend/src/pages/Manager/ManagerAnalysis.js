@@ -189,7 +189,7 @@ const ManagerAnalysis = () => {
         </Grid>
         <NotificationTH />
       </Box>
-      <Footer2 />
+    
       <DateTime />
       
     </div>

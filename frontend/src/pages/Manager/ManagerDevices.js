@@ -161,8 +161,8 @@ export default function ManagerDevices() {
           <Box
             sx={{
               position: "absolute",
-              top: { xs: 170, sm: 140, md: 150, lg: 58 },
-              left: { xs: 80, sm: 350, md: 500, lg: 16 },
+              top: { xs: 150, sm: 140, md: 150, lg: 58 },
+              right: { xs: 18, sm: 28, md: 26, lg: 16 },
               zIndex: 1000,
               minWidth: 200,
             }}
@@ -189,13 +189,13 @@ export default function ManagerDevices() {
           </Box>
         )}
    <Typography
-          variant="h6"
-          align="center"
-          gutterBottom
-          marginTop={12}
-          fontWeight={600}
+          sx={{fontSize: isMobile ? "01rem" : "1.5rem",
+          align:"center",
+          marginLeft: { xs: "60px", sm: "200px", md: "300px", lg: "400px" },
+          marginTop:12,
+          fontWeight:   600,}}
         >
-          Company name: {companyName}
+          {companyName}
         </Typography>
         <Paper
           elevation={3}
@@ -226,9 +226,7 @@ export default function ManagerDevices() {
                     <TableCell sx={{ fontWeight: "bold", width: "150px" }}>
                       Secret Code
                     </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: "bold", width: "100px" }}
-                    ></TableCell>
+                    
                     <TableCell sx={{ fontWeight: "bold", width: "150px" }}>
                       <Box sx={{ minWidth: 100 }}>
                         <FormControl fullWidth>
@@ -272,7 +270,7 @@ export default function ManagerDevices() {
                             fontSize: "inherit",
                             fontFamily: "inherit",
                             color: "inherit",
-                            width: "60%",
+                            width: "50%",
                           }}
                         />
                         <IconButton
@@ -285,10 +283,10 @@ export default function ManagerDevices() {
                           )}
                         </IconButton>
                       </TableCell>
-                      <TableCell>
-                        <IconButton>
+                      
+                      <TableCell><IconButton>
                           <CircleIcon
-                            size={24}
+                            size={20}
                             style={{
                               color:
                                 device.active_status === "Active"
@@ -296,9 +294,7 @@ export default function ManagerDevices() {
                                   : red[500],
                             }}
                           />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>{device.active_status}</TableCell>
+                        </IconButton>{device.active_status}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -403,7 +399,7 @@ export default function ManagerDevices() {
         </Paper>
       </Container>
       <DateTime />
-      <Footer2 />
+      
     </div>
   );
 }

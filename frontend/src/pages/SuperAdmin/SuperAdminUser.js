@@ -40,12 +40,11 @@ export default function SuperAdminUser() {
   const [successMessage, setSuccessMessage] = useState(""); 
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(6);
+  const [rowsPerPage] = useState(5);
   const navigate = useNavigate();
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedItemForDelete, setSelectedItemForDelete] = useState(null);
   const [expandedUser, setExpandedUser] = useState(null);
-
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(max-width:1200px)");
   const isDesktop = !isMobile && !isTablet;
@@ -60,12 +59,10 @@ export default function SuperAdminUser() {
     address: '',
     visibility: true,
   });
-
-
   const backgroundStyle = {
     backgroundColor: "#8FBAA6",
-    padding: "0px 0px 100px 0px",
-    minHeight: "100vh",
+    padding: "0px 0px 0px 0px",
+    height: "100%",
     width: "100%",
     position: "absolute",
     top: 0,
@@ -73,37 +70,33 @@ export default function SuperAdminUser() {
     zIndex: -1,
   };
 
-
   const fetchSltAdminUsers = async () => {
     try {
       const response = await fetch("/api/user");
       const data = await response.json();
+      const sltAdmins = data.filter(user => user.user_role === "slt-admin");
+      // (user) => user.user_role === "slt-admin" && user.visibility === true
       
-      // Filter out only the users with "slt-admin" role
-      const sltAdminUsers = data.filter(
-        user => user.user_role === "slt-admin"
-        // (user) => user.user_role === "slt-admin" && user.visibility === true
-      );
-      
-      // Set the users state
-      setUsers(sltAdminUsers);
+      // Fetch customer-admins for each SLT-Admin
+      const customerAdminsResponse = await fetch("/api/user/customer-admins");
+      const customerAdminsData = await customerAdminsResponse.json();
+
+      const sltAdminWithCustomers = sltAdmins.map(sltAdmin => {
+        const customers = customerAdminsData.filter(customer => 
+          customer.createdById === sltAdmin.id || 
+          customer.accManOne === sltAdmin.id || 
+          customer.accManTwo === sltAdmin.id
+        );
+        return { ...sltAdmin, customers };
+      });
+  
+      setUsers(sltAdminWithCustomers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
   useEffect(() => {
-    // fetch("/api/user")
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     const sltAdminUsers = data.filter(
-    //       (user) => user.user_role === "slt-admin"
-    //     );
-    //     setUsers(sltAdminUsers);
-    //   })
-    //   .catch((error) => console.error("Error fetching users:", error));
-
     fetchSltAdminUsers();
-
   }, []);
   useEffect(() => {
     console.log("selectedItemForDelete:", selectedItemForDelete);
@@ -346,7 +339,14 @@ export default function SuperAdminUser() {
                       <TableCell>{user.address}</TableCell>
                       <TableCell>{user.phone_number}</TableCell>
                       <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.company}</TableCell>
+                      <TableCell>
+                        <Tooltip 
+                          title={user.customers.length > 0 ? user.customers.map(customer => customer.company).join(', ') : 'No Customers'} 
+                          arrow >
+                          <span>{user.company}</span>
+                        </Tooltip>
+                      </TableCell>
+
                       {/* <TableCell>
                         {user.visibility ? (
                           <Chip 
@@ -529,7 +529,7 @@ export default function SuperAdminUser() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+      
       <DateTime />
     </div>
   );

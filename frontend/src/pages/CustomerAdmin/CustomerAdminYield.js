@@ -397,8 +397,9 @@ export default function CustomerAdminYield() {
           }}
           sx={{
             mx: 2,
-            width: { xs: 150, sm: 135, md: 150, lg: 160 },
-            marginLeft: { xs: 4, sm: 5, md: 1, lg: 10 },
+
+            width: { xs: 150, sm: 120, md: 140, lg: 160 },
+            marginLeft: { xs: 4, sm: 6, md: 2, lg: 10 },
             "& .MuiInputBase-root": {
               "&:after": {
                 borderBottomColor: "green",
@@ -689,7 +690,7 @@ export default function CustomerAdminYield() {
         </DialogActions>
       </Dialog>
       <DateTime />
-      <Footer2 />
+     
     </div>
   );
 }

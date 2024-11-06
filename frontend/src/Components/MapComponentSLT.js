@@ -35,7 +35,7 @@ const MapComponentSLT = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isNestHubMax = useMediaQuery(
-    "(max-width: 1350px) and (min-width: 1200px)"
+    "(max-width: 1370px) and (min-width: 1200px)"
   );
   const isNestHub = useMediaQuery("(max-width: 1024px) and (min-width: 980px)");
   const isSurfacePro7 = useMediaQuery(
@@ -144,7 +144,7 @@ const MapComponentSLT = () => {
             ? "230px"
             : isNestHubMax
             ? "33vh"
-            : "270px",
+            : "230px",
           width: isMobile
             ? "90vw"
             : isTablet
@@ -152,8 +152,8 @@ const MapComponentSLT = () => {
             : isNestHub
             ? "64vw"
             : isNestHubMax
-            ? "50vw"
-            : "670px",
+            ? "45vw"
+            : "590px",
           margin: "auto",
           marginLeft: isMobile
             ? "5vw"
@@ -165,7 +165,7 @@ const MapComponentSLT = () => {
             ? "22vw"
             :isSurfacePro7
             ? "22vw"
-            : "260px",
+            : "290px",
           marginTop: isMobile
             ? "10vw"
             : isTablet

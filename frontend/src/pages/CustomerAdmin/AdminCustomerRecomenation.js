@@ -599,7 +599,7 @@ export default function AdminCustomerRecomandation() {
         )}
       </Box>
       <DateTime />
-      <Footer1 />
+      
     </div>
   );
 }

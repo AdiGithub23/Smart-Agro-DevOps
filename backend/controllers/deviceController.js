@@ -27,7 +27,7 @@ exports.getAllDevices = async (req, res) => {
         { model: Farm, as: "farm" }
       ],
       order: [
-        ['createdAt', 'DESC']
+        ['id', 'DESC']
       ]
     });
     res.status(200).json(devices);

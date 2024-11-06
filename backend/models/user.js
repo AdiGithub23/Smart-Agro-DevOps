@@ -53,6 +53,22 @@ module.exports = (sequelize, DataTypes) => {
         key: "id",
       },
     },
+    accManOne: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+    },
+    accManTwo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+    },
     visibility: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -52,7 +52,7 @@ const AdminCustomerRealTime = () => {
           <ChartComponent />
         </Box>
       </Container>
-      <Footer2 />
+      
       <DateTime />
     </div>
   );

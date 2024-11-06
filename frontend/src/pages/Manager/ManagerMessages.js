@@ -58,9 +58,7 @@ const schema = Yup.object().shape({
   subject: Yup.string(),
   message: Yup.string().required("Message is required"),
 });
-const textFieldStyles = {
-  
-};
+
 
 export default function ManagerMessage() {
   const [shouldFetchData, setShouldFetchData] = useState(false);
@@ -127,9 +125,6 @@ export default function ManagerMessage() {
   };
 
 
-  // useEffect(() => {
-  //   console.log("composeData updated: ", composeData);
-  // }, [composeData]);
   const fetchUserAndMessages = async () => {
     try {
       // Fetch Me
@@ -184,69 +179,24 @@ export default function ManagerMessage() {
     }
   };
   useEffect(() => {
-    // const fetchUserAndMessages = async () => {
-    //   try {
-    //     // Fetch Me
-    //     const token = localStorage.getItem("token");
-    //     const userResponse = await axios.get(
-    //       "/api/user/me",
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     console.log("Current User: ", userResponse.data);
-    //     const userId = userResponse.data.id;
-    //     const createdBy = userResponse.data.createdById;
-    //     setCurrentUserId(userId);
-
-    //     // Fetch All Conversations with Unique Users
-    //     const messagesResponse = await axios.get(
-    //       "/api/messages/conversations",
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     console.log("Messengers: ", messagesResponse.data);
-    //     setUsers(messagesResponse.data);
-
-    //     // Fetch Customer-Admin Users
-    //     const customerAdmins = await axios.get(
-    //       "/api/user/customer-admins",
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     console.log("All Customer-Admins: ", customerAdmins.data);
-
-    //     // Filter Customer-Admins whose id matches createdById
-    //     const createdCustomer = customerAdmins.data.filter(
-    //       (admin) => admin.id === createdBy
-    //     );
-    //     console.log("Filtered Created Customer-Admin: ", createdCustomer);
-    //     setAllCustomers(createdCustomer);
-
-    //     // Reset fetch trigger
-    //     setShouldFetchData(false);
-    //   } catch (err) {
-    //     console.error("Failed to fetch data:", err);
-    //   }
-    // };
-
     fetchUserAndMessages();
   }, [shouldFetchData]);
 
 
   const handleComposeClick = () => {
-    const nextId = `C${String(users.length + 1).padStart(3, "0")}`; // Calculate next ID based on the sequence
+    const nextId = `C${String(users.length + 1).padStart(3, "0")}`;    
+    const selectedUser = allCustomers[0]; 
+    const defaultUserRole = availableUserRoles[0]; 
+
     setComposeData((prevState) => ({
       ...prevState,
-      id: nextId, // Set the new ID for the compose data
+      id: nextId, 
+      userID: selectedUser ? selectedUser.id : "", 
+      userRole: defaultUserRole, 
+      name: selectedUser ? selectedUser.full_name : "", 
+      phone: selectedUser ? selectedUser.phone_number : "", 
+      email: selectedUser ? selectedUser.email : "", 
+      address: selectedUser ? selectedUser.address : "", 
     }));
     setOpenCompose(true);
   };
@@ -327,6 +277,7 @@ export default function ManagerMessage() {
       // Get values from form submission
       const receiverId = composeData.userID;
       const content = formValues.message;
+      const subject = formValues.subject || 'No Subject';
 
       if (!receiverId) {
         alert('Please select a receiver');
@@ -344,7 +295,7 @@ export default function ManagerMessage() {
       }
       const response = await axios.post(
         '/api/messages',
-        { receiverId, content },
+        { receiverId, content, subject },
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -353,7 +304,7 @@ export default function ManagerMessage() {
       );
 
       console.log('Message sent successfully!');
-      alert('Message sent successfully!');
+      // alert('Message sent successfully!');
       
       // Update UI and close dialog
       // setUsers(prevUsers => {
@@ -377,7 +328,6 @@ export default function ManagerMessage() {
       return false;
     }
   };
-
   const handleCloseCompose = () => {
     setOpenCompose(false);
     setComposeData({
@@ -484,33 +434,29 @@ export default function ManagerMessage() {
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: "bold" }}>User ID</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      Customer-Admin
-                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Customer-Admin</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Address</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Company</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Phone No</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      Customer Email
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      Last Message
-                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Customer Email</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Subject</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Last Message</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{"UID"+user.id}</TableCell>
-                      <TableCell>{user.full_name}</TableCell>
-                      <TableCell>{user.address}</TableCell>
-                      <TableCell>{user.company}</TableCell>
-                      <TableCell>{user.phone_number}</TableCell>
-                      <TableCell>{user.email}</TableCell>
+                  {paginatedUsers.map((conversation) => (
+                    <TableRow key={conversation.id}>
+                      <TableCell>{"UID"+conversation.id}</TableCell>
+                      <TableCell>{conversation.full_name}</TableCell>
+                      <TableCell>{conversation.address}</TableCell>
+                      <TableCell>{conversation.company}</TableCell>
+                      <TableCell>{conversation.phone_number}</TableCell>
+                      <TableCell>{conversation.email}</TableCell>
+                      <TableCell>{conversation.subject}</TableCell>
                       <TableCell>
-                        {user.messages && user.messages.length > 0
-                          ? user.messages.at(-1).content
+                        {conversation.messages && conversation.messages.length > 0
+                          ? conversation.messages.at(-1).content
                           : "No messages"}
                       </TableCell>
 
@@ -519,7 +465,7 @@ export default function ManagerMessage() {
                           <IconButton
                             variant="contained"
                             marginRight="2px"
-                            onClick={() => handleView(user)}
+                            onClick={() => handleView(conversation)}
                             color="success"
                           >
                             <SourceIcon />
@@ -543,8 +489,8 @@ export default function ManagerMessage() {
             </TableContainer>
           ) : (
             <Grid container spacing={2}>
-              {paginatedUsers.map((user) => (
-                <Grid item xs={12} sm={12} md={12} lg={4} key={user.id}>
+              {paginatedUsers.map((conversation) => (
+                <Grid item xs={12} sm={12} md={12} lg={4} key={conversation.id}>
                   <TableContainer
                     component={Paper}
                     sx={{ backgroundColor: "rgba(199, 221, 211)" }}
@@ -556,13 +502,13 @@ export default function ManagerMessage() {
                           <TableCell>
                             <strong>User ID</strong>
                           </TableCell>{" "}
-                          <TableCell>{"UID"+user.id}</TableCell>
+                          <TableCell>{"UID"+conversation.id}</TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>
                             <strong> Customer-Admin</strong>{" "}
                           </TableCell>
-                          <TableCell>{user.full_name}</TableCell>
+                          <TableCell>{conversation.full_name}</TableCell>
                         </TableRow>
 
                     <>
@@ -570,20 +516,20 @@ export default function ManagerMessage() {
                               <TableCell>
                                 <strong>Address</strong>
                               </TableCell>
-                              <TableCell>{user.address}</TableCell>
+                              <TableCell>{conversation.address}</TableCell>
                             </TableRow>
                             <TableRow>
                               <TableCell>
                                 <strong>Phone No</strong>
                               </TableCell>{" "}
-                              <TableCell>{user.phone_number}</TableCell>
+                              <TableCell>{conversation.phone_number}</TableCell>
                             </TableRow>
 
                             <TableRow>
                               <TableCell>
                                 <strong> Customer Email</strong>
                               </TableCell>{" "}
-                              <TableCell>{user.email}</TableCell>
+                              <TableCell>{conversation.email}</TableCell>
                             </TableRow>
                             <TableRow>
                               <TableCell>
@@ -591,8 +537,8 @@ export default function ManagerMessage() {
                               </TableCell>{" "}
                               <TableCell>
                                 {" "}
-                                {user.messages && user.messages.length > 0
-                                  ? user.messages.at(-1).content
+                                {conversation.messages && conversation.messages.length > 0
+                                  ? conversation.messages.at(-1).content
                                   : "No messages"}
                               </TableCell>
                             </TableRow>
@@ -605,7 +551,7 @@ export default function ManagerMessage() {
                         <IconButton
                           variant="contained"
                           marginRight="2px"
-                          onClick={() => handleView(user)}
+                          onClick={() => handleView(conversation)}
                           color="success"
                         >
                           <SourceIcon />
@@ -671,8 +617,11 @@ export default function ManagerMessage() {
                   <p>
                     Company:<strong> {selectedMessage.company}</strong>
                   </p>
-                  <ChatBox userId={selectedMessage.id} />
-                  {/* <ChatBox user={selectedMessage} />             */}
+                  <p>
+                    Subject:<strong> {selectedMessage.subject}</strong>
+                  </p>
+                  <ChatBox userId={selectedMessage.id} subject={selectedMessage.subject} />
+                  {/* <ChatBox userId={selectedMessage.id} /> */}
                 </>
               ) : (
                 <Typography>No message selected.</Typography>
@@ -692,7 +641,7 @@ export default function ManagerMessage() {
           onClose={handleCloseCompose}
           sx={{
             "& .MuiDialog-paper": {
-              width: { xs: "90%", sm: "90%", md: "70%", lg: "40%" }, // Adjust the percentage or use specific units like '600px'
+              width: { xs: "90%", sm: "90%", md: "70%", lg: "40%" }, 
               maxWidth: "none",
 
               borderRadius: "20px",
@@ -704,14 +653,6 @@ export default function ManagerMessage() {
             initialValues={composeData}
             enableReinitialize={true}
             validationSchema={schema}
-            // onSubmit={(values, { resetForm }) => {
-              
-            //   setComposeData((prevState) => ({
-            //     ...prevState,
-            //     ...values,
-            //   }));
-            //   handleSendCompose();
-            // }}
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true);
               const success = await handleSendCompose(values);
@@ -733,7 +674,7 @@ export default function ManagerMessage() {
                     </Grid>
                     <Grid item xs={8} sm={4} md={4}>
                       <FormControl fullWidth error={touched.userID && Boolean(errors.userID)}>
-                        <Select
+                        {/* <Select
                           name="userID"
                           value={values.userID}
                           onChange={handleComposeChange}
@@ -744,17 +685,47 @@ export default function ManagerMessage() {
                               {"UID"+customer.id}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </Select> */}
+                        <TextField
+                          name="userID"
+                          placeholder="userID"
+                          variant="outlined"
+                          fullWidth
+                          value={values.userID}
+                          onChange={handleComposeChange}
+                          InputProps={{ readOnly: true }} 
+                          error={touched.userID && Boolean(errors.userID)}
+                          helperText={touched.userID && errors.userID}
+                          sx={{
+                          "& .MuiInputBase-root": {
+                            "&:after": {
+                              borderBottomColor: "green",
+                            },
+                          },
+                          "& input:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(199, 221, 211) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                          "&:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(199, 221, 211) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                          }}
+                        />
                       </FormControl>
                     </Grid>
                     <Grid item xs={4} sm={2} md={2}>
                       <Typography gutterBottom sx={{ mt: { xs: "10px" } }}>
-                        user Role
+                        User Role
                       </Typography>
                     </Grid>
                     <Grid item xs={8} sm={4} md={4}>
                       <FormControl fullWidth>
-                        <Select
+                        {/* <Select
                           name="userRole"
                           value={values.userRole}
                           // onChange={handleComposeChange}
@@ -765,7 +736,37 @@ export default function ManagerMessage() {
                               {userRole}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </Select> */}
+                        <TextField
+                          name="userRole"
+                          placeholder="userRole"
+                          variant="outlined"
+                          fullWidth
+                          value={values.userRole}
+                          onChange={handleChange}
+                          InputProps={{ readOnly: true }} 
+                          error={touched.userRole && Boolean(errors.userRole)}
+                          helperText={touched.userRole && errors.userRole}
+                          sx={{
+                          "& .MuiInputBase-root": {
+                            "&:after": {
+                              borderBottomColor: "green",
+                            },
+                          },
+                          "& input:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(199, 221, 211) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                          "&:-webkit-autofill": {
+                            WebkitBoxShadow:
+                              "0 0 0 1000px rgba(199, 221, 211) inset",
+                            WebkitTextFillColor: "black",
+                            transition: "background-color 5000s ease-in-out 0s",
+                          },
+                          }}
+                        />
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6} md={6}>
@@ -774,6 +775,7 @@ export default function ManagerMessage() {
                       </Typography>
                       <TextField
                         name="name"
+                        placeholder="Name"
                         variant="outlined"
                         fullWidth
                         value={values.name}
@@ -808,6 +810,7 @@ export default function ManagerMessage() {
                       </Typography>
                       <TextField
                         name="phone"
+                        placeholder="Phone Number"
                         variant="outlined"
                         fullWidth
                         value={values.phone}
@@ -842,6 +845,7 @@ export default function ManagerMessage() {
                       </Typography>
                       <TextField
                         name="email"
+                        placeholder="Email"
                         variant="outlined"
                         fullWidth
                         value={values.email}
@@ -875,6 +879,7 @@ export default function ManagerMessage() {
                       <TextField
                         name="address"
                         variant="outlined"
+                        placeholder="Address"
                         fullWidth
                         value={values.address}
                         onChange={handleChange}
@@ -902,11 +907,11 @@ export default function ManagerMessage() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={6}>
                       <Typography gutterBottom>Subject</Typography>
-
                       <TextField
-                        name="subject"
-                        variant="outlined"
                         fullWidth
+                        id="subject"
+                        name="subject"
+                        placeholder="Subject"
                         value={values.subject}
                         onChange={handleChange}
                         sx={{
@@ -937,6 +942,7 @@ export default function ManagerMessage() {
                         variant="outlined"
                         fullWidth
                         multiline
+                        placeholder="Message"
                         value={values.message}
                         onChange={handleChange}
                         error={touched.message && Boolean(errors.message)}
@@ -979,7 +985,7 @@ export default function ManagerMessage() {
             )}
           </Formik>
         </Dialog>
-                      {/*--------------------------------Delete message--------------------*/}
+        
 
         <Dialog
           open={openDelete}
@@ -1008,7 +1014,7 @@ export default function ManagerMessage() {
         </Dialog>
       </Container>
       <DateTime />
-      <Footer2 />
+ 
     </div>
   );
 }

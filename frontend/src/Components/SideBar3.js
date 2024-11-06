@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -34,13 +35,13 @@ export default function SideBar3({ open, handleDrawerToggle }) {
     localStorage.clear();
     navigate("/login");
   };
-  const [settings, setSettings] = useState({}); 
+  const [settings, setSettings] = useState({});
   const deviceID = localStorage.getItem("DeviceID");
   useEffect(() => {
     const fetchSettings = async () => {
       if (!deviceID) {
         console.warn('Device ID is missing');
-        return; 
+        return;  
       }
       try {
         const response = await fetch(`/api/settings?device_id=${deviceID}`);
@@ -352,6 +353,53 @@ export default function SideBar3({ open, handleDrawerToggle }) {
               )}
             </ListItem>
           </List>
+          <Box sx={{
+    position: "fixed",
+    bottom: 0,
+    px:isMobile ? 1.5 :isTablet ?3 : 2,
+    py:  3,
+    textAlign: "center",
+  }}>
+<center>
+<Typography
+  sx={{
+    fontSize: isMobile ? "0.5rem" :isTablet ?"0.5rem": "0.8rem",
+    color: "#000000",
+    marginTop: 2,
+  }}
+>
+  {isMobile ? (
+    <>
+      © 2024 Fazenda 
+      <br/>
+      <Link
+        href="https://www.sltdigitallab.lk/"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+      >
+        SLT Digital Lab
+      </Link>
+    </>
+  ) : (
+    <>
+      Copyright © 2024 Fazenda.
+      <br />
+      Designed by{" "}
+      <Link
+        href="https://www.sltdigitallab.lk/"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+      >
+        SLT Digital Lab
+      </Link>
+    </>
+  )}
+</Typography>
+                </center>
+                </Box>
+
         </Box>
       </Drawer>
     </>

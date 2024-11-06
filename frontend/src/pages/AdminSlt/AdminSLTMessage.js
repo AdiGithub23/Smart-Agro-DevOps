@@ -183,7 +183,16 @@ export default function AdminSLTMessage() {
         }
       );
       console.log("All Customer-Admins: ", customerAdmins.data);
-      setAllCustomers(customerAdmins.data);
+      const customerAdminsData = customerAdmins.data;              
+      const myCustomers = customerAdminsData.filter(
+        (user) =>
+          user.user_role === "customer-admin" &&
+          (user.createdById === userId || 
+           user.accManOne === userId || 
+           user.accManTwo === userId)
+      );
+      console.log("My Customer-Admins: ", myCustomers)
+      setAllCustomers(myCustomers);
 
       // Reset fetch trigger
       setShouldFetchData(false);
@@ -338,9 +347,9 @@ export default function AdminSLTMessage() {
   // };
   const handleSendCompose = async (formValues) => {
     try {
-      // Get values from form submission
       const receiverId = composeData.userID;
       const content = formValues.message;
+      const subject = formValues.subject || 'No Subject';
       
       if (!receiverId) {
         alert('Please select a receiver');
@@ -358,7 +367,7 @@ export default function AdminSLTMessage() {
       }
       const response = await axios.post(
         '/api/messages',
-        { receiverId, content },
+        { receiverId, content, subject },
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -504,34 +513,29 @@ export default function AdminSLTMessage() {
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: "bold" }}>User ID</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      Customer-Admin
-                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Customer-Admin</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Address</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Company</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Phone No</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      Customer Email
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      Last Message
-                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Customer Email</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Subject</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Last Message</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{"UID"+user.id}</TableCell>
-                      <TableCell>{user.full_name}</TableCell>
-                      <TableCell>{user.address}</TableCell>
-                      <TableCell>{user.company}</TableCell>
-                      <TableCell>{user.phone_number}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      {/* <TableCell>{user.messages.at(-1).content}</TableCell> */}
+                  {paginatedUsers.map((conversation) => (
+                    <TableRow key={`${conversation.id}-${conversation.subject}`}>
+                      <TableCell>{"UID"+conversation.id}</TableCell>
+                      <TableCell>{conversation.full_name}</TableCell>
+                      <TableCell>{conversation.address}</TableCell>
+                      <TableCell>{conversation.company}</TableCell>
+                      <TableCell>{conversation.phone_number}</TableCell>
+                      <TableCell>{conversation.email}</TableCell>
+                      <TableCell>{conversation.subject}</TableCell>
                       <TableCell>
-                        {user.messages && user.messages.length > 0
-                          ? user.messages.at(-1).content
+                        {conversation.messages && conversation.messages.length > 0
+                          ? conversation.messages.at(-1).content
                           : "No messages"}
                       </TableCell>
                       <TableCell>
@@ -539,7 +543,7 @@ export default function AdminSLTMessage() {
                           <IconButton
                             variant="contained"
                             marginRight="2px"
-                            onClick={() => handleView(user)}
+                            onClick={() => handleView(conversation)}
                             color="success"
                           >
                             <SourceIcon />
@@ -563,8 +567,8 @@ export default function AdminSLTMessage() {
             </TableContainer>
           ) : (
             <Grid container spacing={2}>
-              {paginatedUsers.map((user) => (
-                <Grid item xs={12} sm={12} md={6} lg={4} key={user.id}>
+              {paginatedUsers.map((conversation) => (
+                <Grid item xs={12} sm={12} md={6} lg={4} key={conversation.id}>
                   <TableContainer
                     component={Paper}
                     sx={{ backgroundColor: "rgba(199, 221, 211)" }}
@@ -576,35 +580,35 @@ export default function AdminSLTMessage() {
                           <TableCell>
                             <strong>User ID</strong>
                           </TableCell>{" "}
-                          <TableCell>{"UID"+user.id}</TableCell>
+                          <TableCell>{"UID"+conversation.id}</TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>
                             <strong> Customer-Admin</strong>{" "}
                           </TableCell>
-                          <TableCell>{user.full_name}</TableCell>
+                          <TableCell>{conversation.full_name}</TableCell>
                         </TableRow>
 
-                        {expandedMessage === user.id || !isTablet ? (
+                        {expandedMessage === conversation.id || !isTablet ? (
                           <>
                             <TableRow>
                               <TableCell>
                                 <strong>Address</strong>
                               </TableCell>
-                              <TableCell>{user.address}</TableCell>
+                              <TableCell>{conversation.address}</TableCell>
                             </TableRow>
                             <TableRow>
                               <TableCell>
                                 <strong>Phone No</strong>
                               </TableCell>{" "}
-                              <TableCell>{user.phone_number}</TableCell>
+                              <TableCell>{conversation.phone_number}</TableCell>
                             </TableRow>
 
                             <TableRow>
                               <TableCell>
                                 <strong> Customer Email</strong>
                               </TableCell>{" "}
-                              <TableCell>{user.email}</TableCell>
+                              <TableCell>{conversation.email}</TableCell>
                             </TableRow>
                             <TableRow>
                               <TableCell>
@@ -612,8 +616,8 @@ export default function AdminSLTMessage() {
                               </TableCell>{" "}
                               <TableCell>
                                 {" "}
-                                {user.messages && user.messages.length > 0
-                                  ? user.messages.at(-1).content
+                                {conversation.messages && conversation.messages.length > 0
+                                  ? conversation.messages.at(-1).content
                                   : "No messages"}
                               </TableCell>
                             </TableRow>
@@ -626,7 +630,7 @@ export default function AdminSLTMessage() {
                         <IconButton
                           variant="contained"
                           marginRight="2px"
-                          onClick={() => handleView(user)}
+                          onClick={() => handleView(conversation)}
                           color="success"
                         >
                           <SourceIcon />
@@ -643,8 +647,8 @@ export default function AdminSLTMessage() {
                         </IconButton>
                       </Tooltip>----*/}
                       {isTablet && (
-                        <IconButton onClick={() => handleExpand(user.id)}>
-                          {expandedMessage === user.id ? (
+                        <IconButton onClick={() => handleExpand(conversation.id)}>
+                          {expandedMessage === conversation.id ? (
                             <ExpandLess />
                           ) : (
                             <ExpandMore />
@@ -700,7 +704,11 @@ export default function AdminSLTMessage() {
                   <p>
                     Company:<strong> {selectedMessage.company}</strong>
                   </p>
-                  <ChatBox userId={selectedMessage.id} />
+                  <p>
+                    Subject:<strong> {selectedMessage.subject}</strong>
+                  </p>
+                  <ChatBox userId={selectedMessage.id} subject={selectedMessage.subject} />
+                  {/* <ChatBox userId={selectedMessage.id} /> */}
                   {/* <ChatBox user={selectedMessage} />             */}
                 </>
               ) : (
@@ -735,7 +743,7 @@ export default function AdminSLTMessage() {
           <DialogContent dividers>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={4} sm={2} md={2}>
-                <Typography variant="body1" align="center">
+                <Typography variant="body1" align="left">
                   User ID
                 </Typography>
               </Grid>
@@ -756,7 +764,7 @@ export default function AdminSLTMessage() {
                 </FormControl>
               </Grid>
               <Grid item xs={4} sm={2} md={2}>
-                <Typography variant="body1" align="center">
+                <Typography variant="body1" align="left">
                   User Role
                 </Typography>
               </Grid>
@@ -827,7 +835,7 @@ export default function AdminSLTMessage() {
                   <Grid item xs={12}>
                     <Box component="form" onSubmit={handleSubmit}>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={3} md={3}>
+                        <Grid item xs={12} sm={6} md={6}>
                           <Typography gutterBottom sx={{ mt: { xs: "8px" } }}>
                             Message ID
                           </Typography>
@@ -838,9 +846,9 @@ export default function AdminSLTMessage() {
                             sx={textFieldStyles}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={9} md={9}>
+                        <Grid item xs={12} sm={6} md={6}>
                           <Typography gutterBottom sx={{ mt: { xs: "8px" } }}>
-                            User's  Name*
+                            User's Name*
                           </Typography>
                           <TextField
                             fullWidth
@@ -857,7 +865,7 @@ export default function AdminSLTMessage() {
                             sx={textFieldStyles}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={5} md={5}>
+                        <Grid item xs={12} sm={6} md={6}>
                           <Typography gutterBottom>Phone Number*</Typography>
                           <TextField
                             fullWidth
@@ -874,7 +882,7 @@ export default function AdminSLTMessage() {
                             sx={textFieldStyles}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={7} md={7}>
+                        <Grid item xs={12} sm={6} md={6}>
                           <Typography gutterBottom>Email Address*</Typography>
                           <TextField
                             fullWidth
@@ -985,7 +993,7 @@ export default function AdminSLTMessage() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+      
       <DateTime />
          
     </div>

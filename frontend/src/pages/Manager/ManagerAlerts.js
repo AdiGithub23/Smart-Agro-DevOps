@@ -75,25 +75,21 @@ const ManagerAlerts = () => {
         if (!deviceId) {
           throw new Error("Please login");
         }
-
-        const response = await axios.get(
-          `/api/threshold/parameters/${deviceId}`
-        );
+  
+        const response = await axios.get(`/api/threshold/parameters/${deviceId}`);
         const data = response.data;
-
+  
         const formattedParameters = data.map((param) => {
           const { name, unit, min, max } = param;
-          return `${name} (${unit})`;
+          return unit ? `${name} (${unit})` : name;
         });
-
+  
         const lookup = data.reduce((acc, param) => {
-          acc[`${param.name} (${param.unit})`] = {
-            min: param.min,
-            max: param.max,
-          };
+          const key = param.unit ? `${param.name} (${param.unit})` : param.name;
+          acc[key] = { min: param.min, max: param.max };
           return acc;
         }, {});
-
+  
         setAvailableParameters(formattedParameters);
         setParameterLookup(lookup);
       } catch (err) {
@@ -222,7 +218,11 @@ const ManagerAlerts = () => {
         handleDeleteClose();
       })
       .catch((error) => {
-        alert("Error deleting threshold:", error);
+        if (error.response && error.response.data && error.response.data.error) {
+          alert(error.response.data.error);
+        } else {
+          alert("An unexpected error occurred while deleting the threshold.");
+        }
       });
   };
 
@@ -364,8 +364,7 @@ const ManagerAlerts = () => {
 
   const backgroundStyle = {
     backgroundColor: "#8FBAA6",
-    padding: "0px 0px 0px 0px",
-    minHeight: "100vh",
+    padding: "0px 0px 38px 0px",
     width: "100%",
     position: "absolute",
     top: 0,
@@ -410,7 +409,10 @@ const ManagerAlerts = () => {
         </Box>
       )}
 
-      <Box height="600px">
+      <Box sx={{
+            minHeight:{ xs: "82vh", sm: "89vh", md: "90vh", lg: "78vh" },
+          }}
+      >
         <Paper
           sx={{
             marginTop: { xs: 1, sm: 1, md: 1, lg: 1 },
@@ -853,7 +855,7 @@ const ManagerAlerts = () => {
         {/*--------------------------------Notification--------------------*/}
         <NotificationTH />
       </Box>
-      <Footer1 />
+      
       <DateTime />
     </div>
   );

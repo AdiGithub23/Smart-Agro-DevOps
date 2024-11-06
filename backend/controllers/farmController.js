@@ -221,6 +221,11 @@ exports.updateFarm = async (req, res) => {
 
     await farm.update({ farm_name, farmAddress, farmContactNo, farmEmail });
 
+    await Device.update(
+      { farm_name: farm_name }, 
+      { where: { farm_id: id } }
+    );
+
     if (farmDevices && farmDevices.length) {
       const devices = await Device.findAll({ where: { id: farmDevices } });
       const assignedDevices = await Device.findAll({ 

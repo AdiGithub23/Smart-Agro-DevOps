@@ -22,6 +22,7 @@ import * as yup from "yup";
 import NavBar7 from "../../Components/NavBar7";
 import DateTime from "../../Components/DateTime";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 const schema = yup.object().shape({
   email: yup
   .string()
@@ -56,6 +57,8 @@ const schema = yup.object().shape({
   address: yup.string().required("Address is required"),
   // assignedDevices: yup.string().required('Assigned devices is required'),
   assignedDevices: yup.string(),
+  accManOne: yup.string(),
+  accManTwo: yup.string(),
 });
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
@@ -95,6 +98,7 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function CustomerAdmin() {
+  const navigate = useNavigate();
   const MAX_FILE_SIZE = 5 * 1024 * 1024; 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -102,8 +106,7 @@ export default function CustomerAdmin() {
   const [errorMessage, setErrorMessage] = useState(""); 
   const [fileError, setFileError] = useState(""); 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [initialValues, setInitialValues] = useState({
@@ -117,6 +120,8 @@ export default function CustomerAdmin() {
     adminId: "",
     address: "",
     assignedDevices: "",
+    accManOne: "", 
+    accManTwo: "", 
   });
   const backgroundStyle = {
     backgroundColor: "#8FBAA6",
@@ -176,6 +181,20 @@ export default function CustomerAdmin() {
         });
         const assignedDevices = devicesResponse.data.map(device => device.serial_no).join(", ");
         console.log("assigned devices fetched: ", assignedDevices);
+        
+        const accManOneResponse = userData.accManOne 
+          ? await axios.get(`/api/user/${userData.accManOne}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+          : null;
+        const accManTwoResponse = userData.accManTwo 
+          ? await axios.get(`/api/user/${userData.accManTwo}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+          : null;
+        const accManOneName = accManOneResponse ? accManOneResponse.data.full_name : "N/A";
+        const accManTwoName = accManTwoResponse ? accManTwoResponse.data.full_name : "N/A";
+  
 
         setInitialValues({
           profile_picture: userData.profile_picture || "",
@@ -188,6 +207,10 @@ export default function CustomerAdmin() {
           adminId: userData.id || "",
           address: userData.address || "",
           assignedDevices: assignedDevices || "", 
+          // accManOne: userData.accManOne || "",
+          // accManTwo: userData.accManTwo || "",
+          accManOne: accManOneName,
+          accManTwo: accManTwoName,
         });
         console.log("Initial Values: ", initialValues);
       } catch (error) {
@@ -245,6 +268,12 @@ export default function CustomerAdmin() {
       if (values.password && values.confirmPassword) {
         formData.append("password", values.password);
       }
+      if (!values.accManOne) {
+        formData.append("accManOne", values.accManOne);
+      }
+      if (!values.accManTwo) {
+        formData.append("accManTwo", values.accManTwo);
+      }
       console.log("Try Block Values  : ", values);
       console.log("Try Block FromData: ", formData);
       console.log("Matched Properties");
@@ -292,9 +321,12 @@ export default function CustomerAdmin() {
         adminId: userData.id || "",
         address: userData.address || "",
         assignedDevices: assignedDevices || "", 
+        accManOne: userData.accManOne || "",
+        accManTwo: userData.accManTwo || "",
       });
 
-      alert("The changes are saved successfully")
+      // alert("The changes are saved successfully")
+      navigate("/admincoustomerdashboard");
       // setSuccessMessage("The changes are saved successfully");
       // setTimeout(() => {
       //   setSuccessMessage("");
@@ -647,6 +679,114 @@ export default function CustomerAdmin() {
                               touched.assignedDevices && errors.assignedDevices
                             }
                             placeholder="Assigned Devices"
+                            sx={{
+                              "& .MuiInputBase-root": {
+                                "&:after": {
+                                  borderBottomColor: "green",
+                                },
+                              },
+                              "& input:-webkit-autofill": {
+                                WebkitBoxShadow:
+                                  "0 0 0 1000px rgba(199, 221, 211) inset",
+                                WebkitTextFillColor: "black",
+                                transition:
+                                  "background-color 5000s ease-in-out 0s",
+                              },
+                              "&:-webkit-autofill": {
+                                WebkitBoxShadow:
+                                  "0 0 0 1000px rgba(199, 221, 211) inset",
+                                WebkitTextFillColor: "black",
+                                transition:
+                                  "background-color 5000s ease-in-out 0s",
+                              },
+                            }}
+                          />
+                        </Grid>
+                        {/* Primary */}
+                        <Grid
+                          item
+                          xs={12}
+                          sm={5}
+                          md={4}
+                          lg={6}
+                          sx={{
+                            marginTop: {
+                              xs: "10px",
+                              sm: "10px",
+                              md: "1px",
+                              lg: "15px",
+                            },
+                          }}
+                        >
+                          <Typography gutterBottom>Primary Manager</Typography>
+                          <TextField
+                            fullWidth
+                            id="accManOne"
+                            name="accManOne"
+                            variant="outlined"
+                            value={values.accManOne}
+                            onChange={handleChange}
+                            disabled
+                            onBlur={handleBlur}
+                            error={touched.accManOne && !!errors.accManOne}
+                            helperText={
+                              touched.accManOne && errors.accManOne
+                            }
+                            placeholder="accManOne"
+                            sx={{
+                              "& .MuiInputBase-root": {
+                                "&:after": {
+                                  borderBottomColor: "green",
+                                },
+                              },
+                              "& input:-webkit-autofill": {
+                                WebkitBoxShadow:
+                                  "0 0 0 1000px rgba(199, 221, 211) inset",
+                                WebkitTextFillColor: "black",
+                                transition:
+                                  "background-color 5000s ease-in-out 0s",
+                              },
+                              "&:-webkit-autofill": {
+                                WebkitBoxShadow:
+                                  "0 0 0 1000px rgba(199, 221, 211) inset",
+                                WebkitTextFillColor: "black",
+                                transition:
+                                  "background-color 5000s ease-in-out 0s",
+                              },
+                            }}
+                          />
+                        </Grid>
+                        {/* Secondary */}
+                        <Grid
+                          item
+                          xs={12}
+                          sm={5}
+                          md={4}
+                          lg={6}
+                          sx={{
+                            marginTop: {
+                              xs: "10px",
+                              sm: "10px",
+                              md: "1px",
+                              lg: "15px",
+                            },
+                          }}
+                        >
+                          <Typography gutterBottom>Secondary Manager</Typography>
+                          <TextField
+                            fullWidth
+                            id="accManTwo"
+                            name="accManTwo"
+                            variant="outlined"
+                            value={values.accManTwo}
+                            disabled
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.accManTwo && !!errors.accManTwo}
+                            helperText={
+                              touched.accManTwo && errors.accManTwo
+                            }
+                            placeholder="accManTwo"
                             sx={{
                               "& .MuiInputBase-root": {
                                 "&:after": {

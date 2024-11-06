@@ -351,11 +351,8 @@ export default function ManagerYield() {
               variant="contained"
               color="success"
               sx={{
-                marginLeft: { xs: 15, sm: 23, md: 25, lg: 40 },
-                height: { xs: "50px", sm: "50px", md: "50px", lg: "55px" },
-                width: { xs: "120px", sm: "60px", md: "115px", lg: "160px" },
-                
-                fontSize: { xs: "0.8rem", sm: "0.7rem", md: "1rem", lg: "1.1rem" },
+                marginLeft: { xs: 18, sm: 23, md: 25, lg: 40 },
+                height: "50px",
               }}
               onClick={handleShowTop20}
             >
@@ -396,9 +393,7 @@ export default function ManagerYield() {
               }}
               sx={{
                 mx: 2,
-                width: { xs: 150, sm: 125, md: 150, lg: 160 },
-                marginLeft: { xs: 4, sm: 5.8, md: 1.8, lg: 10 },
-                
+                marginLeft: { xs: 1, sm: 3, md: 1, lg: 10 },
                 "& .MuiInputBase-root": {
                   "&:after": {
                     borderBottomColor: "green",
@@ -438,12 +433,11 @@ export default function ManagerYield() {
                   Number(day) >= 1 &&
                   Number(day) <=
                     new Date(Number(year), Number(month), 0).getDate();
-                
+
                 if (isValidYear && isValidMonth && isValidDay) {
                   setEndDate(value); 
                   if (startDate && new Date(value) < new Date(startDate)) {
-                
-                    setDateError('End date cannot be earlier than the start date');
+                    setDateError('"To" date cannot be earlier than the "From" date');
                   } else {
                     setDateError(""); // Clear the error if the date range is valid
                   }
@@ -454,9 +448,7 @@ export default function ManagerYield() {
               }}
               sx={{
                 mx: 2,
-                width: { xs: 155, sm: 125, md: 150, lg: 160 },
-                marginLeft: { xs: 1, sm: 8.8, md: 3, lg: 10 },
-                fontSize: { xs: "0.8rem", sm: "0.7rem", md: "1rem", lg: "1.1rem" },
+                marginLeft: { xs: 0, sm: 7, md: 2, lg: 10 },
                 "& .MuiInputBase-root": {
                   "&:after": {
                     borderBottomColor: "green",
@@ -483,20 +475,17 @@ export default function ManagerYield() {
           {/*--------------------------------Download history button--------------------*/}
 
           <Grid item xs={12} sm={3}>
-          <Button
-  variant="contained"
-  color="success"
-  sx={{
-    marginLeft: { xs: 14, sm: 12, md: 4, lg: 10 },
-    width: { xs: "120px", sm: "85px", md: "140px", lg: "180px" },
-    height: { xs: "50px", sm: "45px", md: "50px", lg: "55px" },
-    fontSize: { xs: "0.8rem", sm: "0.7rem", md: "0.8rem", lg: "0.9rem" },
-  }}
-  onClick={handleDownload}
->
-  Download History
-</Button>
-
+            <Button
+              variant="contained"
+              color="success"
+              sx={{
+                marginLeft: { xs: 14, sm: 15, md: 4, lg: 10 },
+                height: "50px",
+              }}
+              onClick={handleDownload}
+            >
+              Download History
+            </Button>
           </Grid>
         </Grid>
       </Box>

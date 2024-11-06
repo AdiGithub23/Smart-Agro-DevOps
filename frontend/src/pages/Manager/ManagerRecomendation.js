@@ -600,7 +600,7 @@ export default function ManagerRecomandation() {
         )}
       </Box>
       <DateTime />
-      <Footer2 />
+      
     </div>
   );
 }

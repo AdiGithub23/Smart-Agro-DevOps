@@ -190,7 +190,7 @@ const AdminCustomerAnalysis = () => {
         <NotificationTH />
       </Box>
       <DateTime />
-      <Footer2 />
+      
     </div>
   );
 };

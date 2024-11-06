@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Button,
@@ -76,6 +76,11 @@ export default function SuperAdmin() {
     left: 0,
     zIndex: -1,
   };
+
+  useEffect(() => {
+    // document.title = "Super Admin";
+    console.log("Doc Title: ", document.title)
+  }, []);  
 
   useEffect(() => {
     const fetchUserData = async () => {

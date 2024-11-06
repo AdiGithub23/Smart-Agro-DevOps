@@ -8,6 +8,7 @@ import {
   Box,
   Typography,
   TextField,
+  Select, MenuItem,
   Button,
   InputAdornment,
   Paper,
@@ -46,6 +47,10 @@ const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required"),
   companyName: yup.string().required("Company name is required"),
   address: yup.string().required("Address is required"),
+  accManOne: yup.string().required("Primary Account Manager is required"),
+  accManTwo: yup.string()
+  .required("Secondary Account Manager is required")
+  .notOneOf([yup.ref('accManOne')], "Primary and Secondary Account Managers must be different"),
 });
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
@@ -85,6 +90,7 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function AdminSLTEdit() {
+  const [currentSltAdmins, setCurrentSltAdmins] = useState([]);
   const MAX_FILE_SIZE = 5 * 1024 * 1024; 
   const [successMessage, setSuccessMessage] = useState(""); 
   const [fileError, setFileError] = useState(""); 
@@ -105,6 +111,8 @@ export default function AdminSLTEdit() {
     companyName: "",
     adminId: userId,
     address: "",
+    accManOne: "",
+    accManTwo: ""
   });
   const backgroundStyle = {
     backgroundColor: "#8FBAA6",
@@ -166,14 +174,40 @@ export default function AdminSLTEdit() {
           companyName: userData.company || "",
           adminId: userData.adminId || userId,
           address: userData.address || "",
+          accManOne: userData.accManOne || "",
+          accManTwo: userData.accManTwo || "",
         });
         console.log("Initial Values: ", initialValues);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
+    const fetchOtherSltAdmins = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const myResponse = await axios.get(`/api/user/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Logged-In User data fetched: ", myResponse.data);
+        console.log("Logged-In User Id          : ", myResponse.data.id);
+
+        const response = await fetch("/api/user");
+        const sltdata = await response.json();
+        const sltAdmins = sltdata.filter(
+          // user => user.user_role === "slt-admin"
+          (user) => user.user_role === "slt-admin" && user.visibility === true && user.id != myResponse.data.id
+        );
+        console.log("sltAdmins: ", sltAdmins)
+        setCurrentSltAdmins(sltAdmins);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
     fetchUserData();
+    fetchOtherSltAdmins();
   }, [userId]);
   const handleSubmitForm = async (values, { resetForm }) => {
     console.log("handleSubmitForm function triggered !!!");
@@ -222,6 +256,8 @@ export default function AdminSLTEdit() {
       if (values.password) {
         formData.append("password", values.password);
       }
+      formData.append("accManOne", values.accManOne);
+      formData.append("accManTwo", values.accManTwo);
       console.log(values);
       console.log(formData);
       console.log("Matched Properties");
@@ -251,6 +287,8 @@ export default function AdminSLTEdit() {
         companyName: userData.company || '',
         adminId: userData.adminId || userId, 
         address: userData.address || '',
+        accManOne: userData.accManOne,
+        accManTwo: userData.accManTwo,
       });
 
       alert("The changes are saved successfully")
@@ -716,6 +754,49 @@ export default function AdminSLTEdit() {
                             }}
                           />
                         </Grid>
+
+                        {/* Account Manager 1 & 2*/}
+                        <Grid item>
+                          <Typography gutterBottom>Primary Account Manager*</Typography>
+                            <Select
+                              id="accManOne"
+                              name="accManOne"
+                              value={values.accManOne}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={touched.accManOne && !!errors.accManOne}
+                              // error={touched.accManOne && Boolean(errors.accManOne)}
+                            >
+                              {currentSltAdmins.map((admin) => (
+                                <MenuItem key={admin.id} value={admin.id}>
+                                  {admin.full_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                        </Grid>
+                        <Grid item>
+                          <Typography gutterBottom>Secondary Account Manager*</Typography>
+                            <Select
+                              id="accManTwo"
+                              name="accManTwo"
+                              value={values.accManTwo}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={touched.accManOne && !!errors.accManOne}
+                              // error={touched.accManTwo && Boolean(errors.accManTwo)}
+                            >
+                              {currentSltAdmins.map((admin) => (
+                                <MenuItem key={admin.id} value={admin.id}>
+                                  {admin.full_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                        </Grid>
+                        {values.accManOne === values.accManTwo && (
+                          <Typography color="error" variant="body2">
+                            Primary & Secondary account managers should be different
+                          </Typography>
+                        )}
 
                         <Grid
                           item

@@ -90,9 +90,24 @@ const NotificationBox = ({ anchorEl, open, onClose }) => {
 
         const api1Notifications = api1Response.data.success ? api1Response.data.notifications : [];
         const api2Notifications = api2Response.data;
+        
+        const sortedApi2Notifications = api2Notifications
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
+          .slice(0, 5);
+        console.log("api1Notifications: ", api1Notifications)
+        console.log("api2Notifications: ", sortedApi2Notifications)
+        console.log("api1Notifications IDs:", api1Notifications.map(notification => notification.id));
+        console.log("api2Notifications IDs:", sortedApi2Notifications.map(notification => notification.id));
+  
+        // Filter out duplicates
+        const uniqueApi2Notifications = api2Notifications.filter(
+          (notification) => !api1Notifications.some(
+            (api1Notification) => api1Notification.id === notification.id
+          )
+        );
 
-        const combinedNotifications = [...api1Notifications, ...api2Notifications];
-
+        // const combinedNotifications = [...api1Notifications, ...api2Notifications];
+        const combinedNotifications = [...api1Notifications, ...uniqueApi2Notifications];
         const sortedNotifications = combinedNotifications
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
           .slice(0, 5);

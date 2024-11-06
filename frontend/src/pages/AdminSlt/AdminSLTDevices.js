@@ -299,9 +299,8 @@ export default function AdminSLTDevices() {
           <Box
             sx={{
               width: { xs: 150, sm: 200, md: 250, lg: 250 },
-              top: { xs: 70, sm: 80, md: 80, lg: 70 },
-              left: { xs: 60, sm: 382, md: 450, lg: 250 },
-              zIndex: 1000,
+              top: { xs: 65, sm: 75, md: 80, lg: 70 },
+              right: { xs: 18, sm: 28, md: 26, lg: 16 },              zIndex: 1000,
               position: "absolute",
             }}
           >
@@ -354,7 +353,6 @@ export default function AdminSLTDevices() {
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold", padding: "4px" }}>
                       {" "}
-                      
                       Secret Code
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold", padding: "6px" }}>
@@ -478,8 +476,12 @@ export default function AdminSLTDevices() {
                         {device.active_status}
                       </TableCell>
                       <TableCell sx={{ padding: "6px" }}>
-  <center>{device.assigned_SLT_admin ? `UID${device.assigned_SLT_admin}` : ""}</center>
-</TableCell>
+                        <center>
+                          {device.assigned_SLT_admin
+                            ? `UID${device.assigned_SLT_admin}`
+                            : ""}
+                        </center>
+                      </TableCell>
                       <TableCell sx={{ padding: "6px" }}>
                         {device.latitude}
                       </TableCell>
@@ -613,9 +615,13 @@ export default function AdminSLTDevices() {
                               <TableCell>
                                 <strong>Assigned SLTAdmin:</strong>{" "}
                               </TableCell>
-                              <TableCell >
-  <center>{device.assigned_SLT_admin ? `UID${device.assigned_SLT_admin}` : ""}</center>
-</TableCell>
+                              <TableCell>
+                                <center>
+                                  {device.assigned_SLT_admin
+                                    ? `UID${device.assigned_SLT_admin}`
+                                    : ""}
+                                </center>
+                              </TableCell>
                             </TableRow>
 
                             <TableRow>
@@ -699,7 +705,7 @@ export default function AdminSLTDevices() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+      
       <DateTime />
     </div>
   );

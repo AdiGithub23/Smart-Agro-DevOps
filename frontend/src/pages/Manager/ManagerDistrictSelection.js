@@ -286,7 +286,7 @@ export default function AdminSLTDistrictSelection() {
         )}
 
         <DateTime />
-        <Footer2 />
+        
       </Box>
     </>
   );

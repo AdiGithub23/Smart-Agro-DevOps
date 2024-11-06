@@ -302,7 +302,6 @@ export default function ManagerDashboard() {
       <DateTime />
       {/*---------------------Notification-----------------------*/}
       <NotificationM />
-      {isMobile ? <Footer2 /> : <Footer1 />}
     </div>
   );
 }

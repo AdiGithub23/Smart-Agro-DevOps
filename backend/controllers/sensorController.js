@@ -372,7 +372,7 @@ exports.getGraphData = async (req, res) => {
 
     const latestSensorData = await Sensor.findOne({
       where: { deviceId: id },
-      order: [["recorded_at", "DESC"]],
+      order: [["id", "DESC"]],
       attributes: ["recorded_at"],
     });
 

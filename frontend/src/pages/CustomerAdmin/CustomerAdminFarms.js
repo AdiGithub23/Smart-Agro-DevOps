@@ -75,8 +75,8 @@ export default function CustomerAdminFarms() {
     farm_name: Yup.string().required("Farm Name is required"),
     farmAddress: Yup.string().required("Address is required"),
     farmContactNo: Yup.string()
-    .matches(/^[0-9]{10,}$/, "Contact No must contain at least 10 digits")
-    .required("Contact No is required"),
+      .matches(/^[0-9]{10}$/, "Contact No must be a 10-digit number")
+      .required("Contact No is required"),
     farmEmail: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
@@ -991,7 +991,7 @@ export default function CustomerAdminFarms() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+      
       <DateTime />
     </div>
   );

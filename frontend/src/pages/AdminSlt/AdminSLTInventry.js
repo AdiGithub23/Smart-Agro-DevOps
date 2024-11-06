@@ -109,9 +109,6 @@ export default function AdminSLTInventry() {
   const [fileName, setFileName] = useState("");
   const [expandedItems, setExpandedItems] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
- 
-  const [error, setError] = useState('');
-
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(max-width:1200px)");
   const isDesktop = !isMobile && !isTablet;
@@ -127,6 +124,8 @@ export default function AdminSLTInventry() {
     zIndex: -1,
   };
 
+  const [error, setError] = useState("");
+
   const validationSchema = Yup.object().shape({
     customer: Yup.string()
     .required('Customer ID is required'),
@@ -141,10 +140,6 @@ export default function AdminSLTInventry() {
     .max(180, 'Longitude must be between -180 and 180'),
     editPackageName: Yup.string().required("Package ID is required"),
   });
-
-  const initialValues = {
-    editPackageName: ''
-  };
   
 
   const handleFormSubmit = () => {
@@ -247,11 +242,13 @@ export default function AdminSLTInventry() {
       reader.onload = async (e) => {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: "array" });
-
-        // Assuming the first sheet contains the inventory data
+  
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
+        const jsonData = XLSX.utils.sheet_to_json(worksheet).map(item => ({
+          ...item,
+          serial_no: String(item.serial_no)
+      }));
+      
         try {
           const response = await axios.post(
             "/api/inventory",
@@ -278,19 +275,7 @@ export default function AdminSLTInventry() {
     } catch (error) {
       console.error("Error uploading file:", error);
     }
-  };
-
-
-  const handleUpdate = () => {
-    // Validate the field
-    if (!editPackageName) {
-      setError('Package ID is required');
-      return; // Prevent submission if validation fails
-    }
-
-    setError(''); // Clear error if validation passes
-    handleSubmitEdit(editPackageName); // Call the submit function with the selected value
-  };
+  };  
 
   const handleEdit = (id) => {
     const item = inventoryItems.find((item) => item.id === id);
@@ -395,13 +380,19 @@ export default function AdminSLTInventry() {
         setLongitude('');   
         fetchInventoryItems();
       } catch (error) {
-        alert(error.response.data.message);
+        
       }
     }
   };
 
+  
 
   const handleSubmitEdit = async () => {
+    if (!editPackageName) {
+      setError("Package ID is required.");
+      return; // Stop function execution if validation fails
+    }
+
     if (selectedItem) {
       try {
         const updatedItem = {
@@ -443,6 +434,7 @@ export default function AdminSLTInventry() {
     }
   };
 
+
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
   };
@@ -471,6 +463,8 @@ export default function AdminSLTInventry() {
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
+
+  
 
   const dialogContentStyle = {
     minHeight: "200px",
@@ -508,9 +502,8 @@ export default function AdminSLTInventry() {
             <Box
               sx={{
                 width: { xs: 150, sm: 200, md: 250, lg: 250 },
-                top: { xs: 10, sm: 10, md: 10, lg: 58 },
-                right: { xs: 198, sm: 212, md: 350, lg: 250 },
-                zIndex: 1000,
+                top: { xs: 3, sm:5, md: 5, lg: 58 },
+                right: { xs: 88, sm: 88, md: 90, lg: 16 },                zIndex: 1000,
                 position: "absolute",
               }}
             >
@@ -1065,7 +1058,7 @@ export default function AdminSLTInventry() {
     </Dialog>
     
       {/*--------------------------------Edit inventory--------------------*/}
-       <Dialog
+      <Dialog
       open={openEdit}
       onClose={handleCloseEdit}
       sx={{
@@ -1078,15 +1071,13 @@ export default function AdminSLTInventry() {
     >
       <DialogTitle>Edit Inventory</DialogTitle>
       <DialogContent>
-        <FormControl fullWidth sx={{ marginTop: "16px" }} error={!!error}>
+        <FormControl fullWidth sx={{ marginTop: "16px" }} error={Boolean(error)}>
           <InputLabel>Package ID</InputLabel>
           <Select
             value={editPackageName}
             onChange={(e) => {
               setEditPackageName(e.target.value);
-              if (e.target.value) {
-                setError(''); // Clear error on change
-              }
+              if (error) setError(""); // Clear error if user selects a value
             }}
             label="Package ID"
             sx={{
@@ -1094,7 +1085,7 @@ export default function AdminSLTInventry() {
                 color: "gray", // Set label color to gray when there is an error
               },
               "& .MuiSelect-root.Mui-error": {
-                color: "gray", // Ensure select text color is gray when there is an error
+                color: "gray", // Set select text color to gray on error
               },
             }}
           >
@@ -1104,17 +1095,17 @@ export default function AdminSLTInventry() {
               </MenuItem>
             ))}
           </Select>
-          {/* Display error message */}
           {error && <div style={{ color: "red", marginTop: "8px" }}>{error}</div>}
         </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseEdit}>Cancel</Button>
-        <Button onClick={handleUpdate} color="success">
+        <Button onClick={handleSubmitEdit} color="success">
           Update
         </Button>
       </DialogActions>
     </Dialog>
+
       {/*--------------------------------Delete inventory--------------------*/}
       <Dialog
         open={openDelete}
@@ -1141,7 +1132,7 @@ export default function AdminSLTInventry() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Footer2 />
+     
       <DateTime />
     </div>
   );

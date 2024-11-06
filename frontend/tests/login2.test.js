@@ -1,5 +1,6 @@
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const assert = require('assert');
+
 describe('Login Page Tests', function () {
   let driver;
   // Set the timeout for the tests

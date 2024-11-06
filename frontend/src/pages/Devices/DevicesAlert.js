@@ -77,35 +77,32 @@ const DevicesAlerts = () => {
         if (!deviceId) {
           throw new Error("Please login");
         }
-
-        const response = await axios.get(
-          `/api/threshold/parameters/${deviceId}`
-        );
+  
+        const response = await axios.get(`/api/threshold/parameters/${deviceId}`);
         const data = response.data;
-
+  
         const formattedParameters = data.map((param) => {
           const { name, unit, min, max } = param;
-          return `${name} (${unit})`;
+          return unit ? `${name} (${unit})` : name;
         });
-
+  
         const lookup = data.reduce((acc, param) => {
-          acc[`${param.name} (${param.unit})`] = {
-            min: param.min,
-            max: param.max,
-          };
+          const key = param.unit ? `${param.name} (${param.unit})` : param.name;
+          acc[key] = { min: param.min, max: param.max };
           return acc;
         }, {});
-
+  
         setAvailableParameters(formattedParameters);
         setParameterLookup(lookup);
       } catch (err) {
         alert(err.message || "An error occurred");
       }
     };
-
+  
     fetchParameters();
     fetchThresholds();
   }, [deviceId]);
+  
 
   const fetchThresholds = async () => {
     try {
@@ -370,8 +367,8 @@ const DevicesAlerts = () => {
 
   const backgroundStyle = {
     backgroundColor: "#8FBAA6",
-    padding: "0px 0px 0px 0px",
-    minHeight: "160vh",
+    padding: "0px 0px 38px 0px",
+    
     width: "100%",
     position: "absolute",
     top: 0,
@@ -416,7 +413,9 @@ const DevicesAlerts = () => {
         </Box>
       )}
 
-      <Box height="600px">
+      <Box sx={{
+            minHeight:{ xs: "82vh", sm: "89vh", md: "90vh", lg: "78vh" },
+          }}>
         <Paper
           sx={{
             marginTop: { xs: 3, sm: 5, md: 2, lg: 3 },
@@ -859,7 +858,6 @@ const DevicesAlerts = () => {
         {/*--------------------------------Notification--------------------*/}
         <NotificationD />
       </Box>
-      <Footer2 />
       <DateTime />
     </div>
   );

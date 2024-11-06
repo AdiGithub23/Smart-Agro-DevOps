@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { alpha, styled } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import {
@@ -21,6 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DateTime from "../../Components/DateTime";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 const schema = yup.object().shape({
   email: yup
   .string()
@@ -99,6 +100,7 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Manager() {
+  const navigate = useNavigate();
   const MAX_FILE_SIZE = 5 * 1024 * 1024; 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -106,8 +108,9 @@ export default function Manager() {
   const [errorMessage, setErrorMessage] = useState(""); 
   const [fileError, setFileError] = useState(""); 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+  const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [initialValues, setInitialValues] = useState({
     email: "",
     phoneNumber: "",
@@ -130,6 +133,32 @@ export default function Manager() {
     top: 0,
     left: 0,
     zIndex: -1,
+  };
+  const handleEditClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("Image size is too large. Maximum allowed size is 5MB.")
+        // setFileError("Image size is too large. Maximum allowed size is 5MB.");
+        // setTimeout(() => {
+        //   setFileError("");
+        // }, 2000);
+        setSelectedFile(null); 
+      } else {
+        setFileError(""); 
+        setSelectedFile(file);
+      }
+    }
+  };
+  const handleDeleteClick = (setFieldValue) => {
+    setSelectedFile(null);  
+    setFieldValue("profile_picture", "/Images/profile_pic.jpg");  
   };
 
   useEffect(() => {
@@ -158,7 +187,7 @@ export default function Manager() {
           } else {
             console.error("Error fetching devices:", deviceError);
           }
-          devicesResponse = { data: [] }; // Fallback to empty data
+          devicesResponse = { data: [] }; 
         }
   
         // Initialize empty sets for unique farm IDs and names
@@ -166,7 +195,6 @@ export default function Manager() {
         const farmNamesSet = new Set();
   
         devicesResponse.data.forEach((device) => {
-          // Check if device and farm properties exist before adding them
           if (device && device.farm_id) {
             farmIdsSet.add(device.farm_id);
           }
@@ -182,12 +210,13 @@ export default function Manager() {
         console.log("assigned unique farm names fetched: ", assignedFarmNames);
   
         const assignedDevices = devicesResponse.data
-          .filter(device => device && device.device_label) // Null check for device label
+          .filter(device => device && device.device_label) 
           .map(device => device.device_label)
           .join(", ");
         console.log("assigned devices fetched: ", assignedDevices);
   
         setInitialValues({
+          profile_picture: userData.profile_picture || "",
           email: userData.email || "",
           phoneNumber: userData.phone_number || "",
           password: "",
@@ -291,19 +320,35 @@ export default function Manager() {
         return; 
       }
 
-      const formData = {
-        full_name: values.fullName,
-        address: values.address,
-        email: values.email,
-        // password: values.password,
-        phone_number: values.phoneNumber,
-        user_role: "customer-manager",
-        company: values.companyName,
-        profile_picture: null,
-      };
-      // Include the password only if it has been provided
+      // const formData = {
+      //   full_name: values.fullName,
+      //   address: values.address,
+      //   email: values.email,
+      //   // password: values.password,
+      //   phone_number: values.phoneNumber,
+      //   user_role: "customer-manager",
+      //   company: values.companyName,
+      //   profile_picture: null,
+      // };
+      // // Include the password only if it has been provided
+      // if (values.password && values.confirmPassword) {
+      //   formData.password = values.password;
+      // }
+      
+      const formData = new FormData();
+      formData.append("full_name", values.fullName);
+      formData.append("address", values.address);
+      formData.append("email", values.email);
+      formData.append("phone_number", values.phoneNumber);
+      formData.append("user_role", "customer-manager");
+      formData.append("company", values.companyName);
+      if (selectedFile) {
+        formData.append("profile_picture", selectedFile); 
+      } else {
+        formData.append("profile_picture", values.profile_picture); 
+      }
       if (values.password && values.confirmPassword) {
-        formData.password = values.password;
+        formData.append("password", values.password);
       }
       console.log("Try Block Values  : ", values);
       console.log("Try Block FromData: ", formData);
@@ -328,11 +373,28 @@ export default function Manager() {
         },
       });
       const myData = me.data;      
-      const devicesResponse = await axios.get(`/api/device-manager/manager/${myData.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });      
+      console.log("Fetched Me ...:", myData)    
+      // const devicesResponse = await axios.get(`/api/device-manager/manager/${myData.id}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });      
+      // console.log("devicesResponse:", devicesResponse) 
+      let devicesResponse;
+      try {
+        devicesResponse = await axios.get(`/api/device-manager/manager/${values.userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (deviceError) {
+        if (deviceError.response && deviceError.response.status === 404) {
+          console.warn("No devices found for this manager after update.");
+          devicesResponse = { data: [] };
+        } else {
+          console.error("Error fetching devices after update:", deviceError);
+          return;
+        }
+      }
+
       // Unique farm IDs and names
       const farmIdsSet = new Set();
       const farmNamesSet = new Set();
@@ -348,6 +410,8 @@ export default function Manager() {
       const assignedFarmIds = Array.from(farmIdsSet).join(", FID");
       const assignedFarmNames = Array.from(farmNamesSet).join(", ");
       const assignedDevices = devicesResponse.data.map(device => device.device_label).join(", ");
+      console.log("Unique Farm Ids:", assignedFarmIds)  
+      console.log("AssignedDevices:", assignedDevices)  
 
       setInitialValues({
         email: myData.email || "",
@@ -363,7 +427,8 @@ export default function Manager() {
         farmName: assignedFarmNames || "",
       });
 
-      alert("The changes are saved successfully")
+      // alert("The changes are saved successfully")
+      navigate("/managerdashboard");
       // setSuccessMessage("The changes are saved successfully");
       // setTimeout(() => {
       //   setSuccessMessage("");
@@ -457,6 +522,7 @@ export default function Manager() {
                   resetForm,
                   touched,
                   handleBlur,
+                  setFieldValue,
                 }) => (
                   <Grid item xs={12}>
                     <Box
@@ -494,31 +560,44 @@ export default function Manager() {
                               },
                             }}
                           >
-                            <Avatar
-                              
-                              alt="User Profile Picture" 
-                              sx={{
-                                width: { xs: 80, sm: 100 },
-                                height: { xs: 80, sm: 100 },
-                              }}
-                            />
-
-                            <Box
-                              position="absolute"
-                              bottom={0}
-                              display="flex"
-                              justifyContent="center"
-                              width="100%"
-                            >
-                            <IconButton aria-label="edit" >
+                          <Avatar
+                            src={
+                              selectedFile
+                                ? URL.createObjectURL(selectedFile)  
+                                : values.profile_picture           
+                                  ? `/${values.profile_picture}`
+                                  // : "/Images/profile_pic.jpg"
+                                  : "/broken-image.jpg"
+                            }
+                            alt="User Profile Picture" 
+                            sx={{
+                              width: { xs: 80, sm: 100 },
+                              height: { xs: 80, sm: 100 },
+                            }}
+                          />
+                          <Box
+                            position="absolute"
+                            bottom={0}
+                            display="flex"
+                            justifyContent="center"
+                            width="100%"
+                          >
+                            <IconButton aria-label="edit" onClick={handleEditClick}>
                               <EditIcon />
                             </IconButton>
-                            <IconButton aria-label="delete"  >
+                            <IconButton aria-label="delete" onClick={() => handleDeleteClick(setFieldValue)} >
                               <DeleteIcon />
                             </IconButton>
-                            </Box>
+                          </Box>
                           </Box>
                         </Grid>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          style={{ display: "none" }}
+                          accept="image/png, image/jpeg, image/jpg"
+                          onChange={handleFileChange}
+                        />
                         <Grid
                           item
                           xs={12}

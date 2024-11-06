@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-const ChatBox = ({ userId }) => {
+const ChatBox = ({ userId, subject }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [receiverId, setReceiverId] = useState();
@@ -23,7 +23,7 @@ const ChatBox = ({ userId }) => {
   // Fetch messages
   useEffect(() => {
     setReceiverId(userId);
-    console.log(`View Message Button is Clicked !!! User Id: ${userId}`);
+    console.log(`View Messages for UserId: ${userId} under the subject: ${subject}`);
 
     const fetchMessages = async () => {
       try {
@@ -34,6 +34,7 @@ const ChatBox = ({ userId }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { subject }, 
           }
         );
         console.log("User Messages Fetched");
@@ -47,7 +48,7 @@ const ChatBox = ({ userId }) => {
     };
 
     fetchMessages();
-  }, [userId]);
+  }, [userId, subject]);
 
   // Send messages
   const handleSendMessage = async () => {
@@ -63,6 +64,7 @@ const ChatBox = ({ userId }) => {
         {
           receiverId,
           content: inputValue,
+          subject,
         },
         {
           headers: {

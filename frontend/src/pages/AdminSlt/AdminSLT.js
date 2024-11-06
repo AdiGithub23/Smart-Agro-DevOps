@@ -125,6 +125,11 @@ export default function AdminSLT() {
     left: 0,
     zIndex: -1,
   };
+  useEffect(() => {
+    // document.title = "Super Admin";
+    console.log("Doc Title: ", document.title)
+  }, []);
+  
   const handleEditClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -454,7 +459,7 @@ export default function AdminSLT() {
                             id="adminId"
                             name="adminId"
                             variant="outlined"
-                            value={`UID ${values.adminId}`}
+                            value={`UID${values.adminId}`}
                             disabled
                             onChange={handleChange}
                             onBlur={handleBlur}

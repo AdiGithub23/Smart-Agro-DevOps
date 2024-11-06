@@ -22,8 +22,12 @@ exports.uploadInventory = async (req, res) => {
     const inventoryData = req.body;
 
     for (const item of inventoryData) {
-      if (item.secret_code && (item.secret_code.length > 10 || item.secret_code.length < 5)) {
-        return res.status(400).json({ error: `Secret code should be a maximum of 10 characters, and minimum of 5 characters` });
+      const secretCode = String(item.secret_code || "");
+
+      if (secretCode.length > 10 || secretCode.length < 5) {
+        return res.status(400).json({
+          error: `Secret code should be a maximum of 10 characters, and minimum of 5 characters`,
+        });
       }
 
       const numericPackageId = item.package_id.replace(/\D/g, '');
@@ -54,7 +58,7 @@ exports.uploadInventory = async (req, res) => {
 exports.getAllInventoryItems = async (req, res) => {
   try {
     const inventoryItems = await Inventory.findAll({
-      order: [['createdAt', 'DESC']],
+      order: [['id', 'DESC']],
     });
     res.status(200).json(inventoryItems);
   } catch (err) {

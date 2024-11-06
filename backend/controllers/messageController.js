@@ -1,10 +1,10 @@
-const { Message, User, Notification } = require('../models');
+const { Message, User, Notification, NotificationReceiver } = require('../models');
 const { Op } = require('sequelize');
 const { addNotification } = require('./notificationController'); 
 
 exports.createMessage = async (req, res) => {
   try {
-    const { receiverId, content } = req.body;
+    const { receiverId, content, subject } = req.body;
     const senderId = req.user.id;
     const senderRole = req.user.role;
 
@@ -49,6 +49,7 @@ exports.createMessage = async (req, res) => {
       senderId,
       receiverId,
       content,
+      subject: subject || 'No Subject'
     });
     console.log("\n# Message Created !");
     // Trigger notification creation for the receiver
@@ -73,11 +74,11 @@ exports.createMessage = async (req, res) => {
         isRead: false,
         receiverId: receiverId,
       });      
-      // await NotificationReceiver.create({
-      //   notificationId: notification.id,
-      //   receiverId: receiverId,
-      //   isRead: false,
-      // });
+      await NotificationReceiver.create({
+        notificationId: notification.id,
+        receiverId: receiverId,
+        isRead: false,
+      });
       console.log('Notification created successfully');
       console.log('Notification:', notification.toJSON());
       
@@ -108,8 +109,10 @@ exports.createMessage = async (req, res) => {
 
 // Conversations with a Specific User
 exports.getMessages = async (req, res) => {
+  console.log(`Fetching messages for userId: ${req.params.userId} under the subject: ${req.query.subject} `)
   try {
     const { userId } = req.params;
+    const { subject } = req.query; 
     const currentUser = req.user.id;
 
     const user = await User.findByPk(userId);
@@ -119,9 +122,12 @@ exports.getMessages = async (req, res) => {
 
     const messages = await Message.findAll({
       where: {
-        [Op.or]: [
-          { senderId: currentUser, receiverId: userId },
-          { senderId: userId, receiverId: currentUser },
+        [Op.and]: [
+          { [Op.or]: [
+            { senderId: currentUser, receiverId: userId },
+            { senderId: userId, receiverId: currentUser }
+          ] },
+          { subject } 
         ],
       },
       order: [['timestamp', 'ASC']],
@@ -299,6 +305,7 @@ exports.getMessagers = async (req, res) => {
 exports.getConversations = async (req, res) => {
   try {
     const currentUser = req.user.id;
+    console.log('Current user ID:', currentUser);
 
     // Step 1: Fetch all messages where the current user is either the sender or the receiver
     const messages = await Message.findAll({
@@ -316,12 +323,15 @@ exports.getConversations = async (req, res) => {
     });
 
     // Step 2: Organize the data to include unique users and their corresponding messages
-    const users = {};
+    // const users = {};
+    const conversations = {};
 
     messages.forEach(message => {
       const otherUser = message.senderId === currentUser ? message.Receiver : message.Sender;
-      if (!users[otherUser.id]) {
-        users[otherUser.id] = {
+      const conversationKey = `${otherUser.id}-${message.subject}`;
+
+      if (!conversations[conversationKey]) {
+        conversations[conversationKey] = {
           id: otherUser.id,
           full_name: otherUser.full_name,
           address: otherUser.address,
@@ -329,23 +339,23 @@ exports.getConversations = async (req, res) => {
           phone_number: otherUser.phone_number,
           email: otherUser.email,
           user_role: otherUser.user_role,
+          subject: message.subject,
           messages: []
         };
       }
-
-      users[otherUser.id].messages.push({
+      
+      conversations[conversationKey].messages.push({
         id: message.id,
         content: message.content,
+        subject: message.subject,
         sender: message.Sender.full_name,
         receiver: message.Receiver.full_name,
         timestamp: message.timestamp
       });
     });
 
-    // Convert the users object into an array
-    const userMessages = Object.values(users);
-
-    res.status(200).json(userMessages);
+    const conversationsList = Object.values(conversations);
+    res.status(200).json(conversationsList );
   } catch (err) {
     if (!res.headersSent) {
       res.status(500).json({ error: err.message });

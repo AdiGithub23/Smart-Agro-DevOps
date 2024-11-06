@@ -45,7 +45,6 @@ export default function AdminSLTUser() {
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedItemForDelete, setSelectedItemForDelete] = useState(null);
   const [expandedUser, setExpandedUser] = useState(null);
-
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(max-width:1250px)");
   const isDesktop = !isMobile && !isTablet;
@@ -61,37 +60,49 @@ export default function AdminSLTUser() {
     visibility: true,
   });  
 
-
   const fetchCustomerAdmins = async () => {
     try {
-      const response = await fetch("/api/user");
-      const data = await response.json();
-      
-      // Filter out only the users with "customer-admin" role
-      const customerAdmins = data.filter(
-        user => user.user_role === "customer-admin"
-        // (user) => user.user_role === "customer-admin" && user.visibility === true
-      );
-      
-      // Set the users state
-      setUsers(customerAdmins);
+      const token = localStorage.getItem("token");
+      const myResponse = await axios.get(`/api/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const loggedInUserId = myResponse.data.id;
+      console.log("loggedInUserId: ", loggedInUserId)
+  
+      // Fetch all users to map IDs to usernames
+      const usersResponse = await fetch("/api/user");
+      const allUsersData = await usersResponse.json();
+      console.log("All Customers: ", allUsersData)
+      const userMap = allUsersData.reduce((acc, user) => {
+        acc[user.id] = user.full_name; 
+        return acc;
+      }, {});
+  
+      // Filter customer admins
+      const customerAdmins = allUsersData.filter(
+        (user) =>
+          user.user_role === "customer-admin" &&
+          (user.createdById === loggedInUserId ||
+           user.accManOne === loggedInUserId ||
+           user.accManTwo === loggedInUserId)
+      ); 
+      console.log("My Customer-Admins: ", customerAdmins)
+  
+      // Set user data with mapped account manager names
+      const customerAdminsWithNames = customerAdmins.map(admin => ({
+        ...admin,
+        accManOneName: userMap[admin.accManOne] || "N/A", 
+        accManTwoName: userMap[admin.accManTwo] || "N/A"  
+      }));
+      setUsers(customerAdminsWithNames);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
-  useEffect(() => {
-    // fetch("/api/user")
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     const customerAdminUsers = data.filter(
-    //       (user) => user.user_role === "customer-admin"
-    //     );
-    //     setUsers(customerAdminUsers);
-    //   })
-    //   .catch((error) => console.error("Error fetching users:", error));
-      
+  useEffect(() => {      
     fetchCustomerAdmins();
-
   }, []);
   useEffect(() => {
     console.log("selectedItemForDelete:", selectedItemForDelete);
@@ -312,6 +323,8 @@ export default function AdminSLTUser() {
                     <TableCell sx={{ fontWeight: "bold" }}>Phone No</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Company Name</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Primary Man</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Secondary Man</TableCell>
                     {/* <TableCell sx={{ fontWeight: "bold" }}>Visibility</TableCell> */}
                     <TableCell sx={{ fontWeight: "bold",padding:1 }}>Action</TableCell>
                   </TableRow>
@@ -339,6 +352,8 @@ export default function AdminSLTUser() {
                       <TableCell>{user.phone_number}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.company}</TableCell>
+                      <TableCell>{user.accManOneName}</TableCell>
+                      <TableCell>{user.accManTwoName}</TableCell>
                       {/* <TableCell>
                         {user.visibility ? (
                           <Chip 
@@ -527,7 +542,7 @@ export default function AdminSLTUser() {
           </DialogActions>
         </Dialog>
       </Container>
-      <Footer2 />
+      
       <DateTime />
     </div>
   );
